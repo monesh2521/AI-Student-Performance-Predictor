@@ -14,7 +14,7 @@ from model import (
 # =========================================================
 
 st.set_page_config(
-    page_title="NEXUS AI | Student Intelligence",
+    page_title="BYTE FORCE AI | Student Intelligence",
     page_icon="◈",
     layout="wide",
     initial_sidebar_state="collapsed"
