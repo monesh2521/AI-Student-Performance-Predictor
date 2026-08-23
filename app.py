@@ -2,7 +2,6 @@
 import streamlit as st
 import pandas as pd
 import time
-import random
 
 from model import (
     predict_score,
@@ -15,858 +14,730 @@ from model import (
 # ============================================================
 
 st.set_page_config(
-    page_title="NEXUS AI",
+    page_title="NEXUS | AI Student Intelligence",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
+
 # ============================================================
-# CUSTOM CSS
+# CSS
 # ============================================================
 
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+    /* =========================
+       GLOBAL
+       ========================= */
 
-* {
-    font-family: 'Inter', sans-serif;
-}
+    .stApp {
+        background:
+            radial-gradient(
+                circle at 15% 15%,
+                rgba(0, 255, 170, 0.10),
+                transparent 25%
+            ),
+            radial-gradient(
+                circle at 85% 20%,
+                rgba(0, 120, 255, 0.10),
+                transparent 25%
+            ),
+            radial-gradient(
+                circle at 50% 100%,
+                rgba(140, 0, 255, 0.08),
+                transparent 30%
+            ),
+            #020405;
 
-html, body, [class*="css"] {
-    color: #e6edf3;
-}
-
-/* =========================================================
-   MAIN BACKGROUND
-   ========================================================= */
-
-.stApp {
-
-    background:
-
-        radial-gradient(
-            circle at 10% 10%,
-            rgba(0,255,170,0.12),
-            transparent 20%
-        ),
-
-        radial-gradient(
-            circle at 90% 20%,
-            rgba(0,140,255,0.12),
-            transparent 20%
-        ),
-
-        radial-gradient(
-            circle at 50% 100%,
-            rgba(120,0,255,0.10),
-            transparent 30%
-        ),
-
-        #020405;
-
-    min-height: 100vh;
-}
-
-
-/* =========================================================
-   ANIMATED GRID
-   ========================================================= */
-
-.stApp:after {
-
-    content: "";
-
-    position: fixed;
-
-    inset: 0;
-
-    pointer-events: none;
-
-    background-image:
-
-        linear-gradient(
-            rgba(0,255,170,0.025) 1px,
-            transparent 1px
-        ),
-
-        linear-gradient(
-            90deg,
-            rgba(0,255,170,0.025) 1px,
-            transparent 1px
-        );
-
-    background-size: 50px 50px;
-
-    animation: gridMove 15s linear infinite;
-
-    z-index: 0;
-}
-
-
-@keyframes gridMove {
-
-    from {
-        transform: translateY(0);
+        color: #f5f7fa;
     }
 
-    to {
-        transform: translateY(50px);
+    header {
+        visibility: hidden;
     }
 
-}
-
-
-/* =========================================================
-   SCAN LINE
-   ========================================================= */
-
-.stApp:before {
-
-    content: "";
-
-    position: fixed;
-
-    left: 0;
-
-    right: 0;
-
-    height: 2px;
-
-    background: linear-gradient(
-        90deg,
-        transparent,
-        #00ffaa,
-        transparent
-    );
-
-    opacity: 0.25;
-
-    animation: scan 6s linear infinite;
-
-    pointer-events: none;
-
-    z-index: 999;
-}
-
-
-@keyframes scan {
-
-    0% {
-        top: -5%;
+    footer {
+        visibility: hidden;
     }
 
-    100% {
-        top: 105%;
+    #MainMenu {
+        visibility: hidden;
     }
 
-}
 
+    /* =========================
+       MOVING GRID
+       ========================= */
 
-/* =========================================================
-   REMOVE STREAMLIT UI
-   ========================================================= */
+    .grid-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
 
-#MainMenu {
-    visibility: hidden;
-}
+        background-image:
+            linear-gradient(
+                rgba(0,255,170,0.025) 1px,
+                transparent 1px
+            ),
+            linear-gradient(
+                90deg,
+                rgba(0,255,170,0.025) 1px,
+                transparent 1px
+            );
 
-header {
-    visibility: hidden;
-}
+        background-size: 45px 45px;
 
-footer {
-    visibility: hidden;
-}
-
-
-/* =========================================================
-   HERO
-   ========================================================= */
-
-.hero {
-
-    position: relative;
-
-    padding: 50px;
-
-    margin-bottom: 25px;
-
-    border-radius: 30px;
-
-    background:
-
-        linear-gradient(
-            135deg,
-            rgba(5,10,12,0.98),
-            rgba(8,20,20,0.94)
-        );
-
-    border: 1px solid rgba(0,255,170,0.25);
-
-    box-shadow:
-
-        0 0 60px rgba(0,255,170,0.07),
-
-        inset 0 0 60px rgba(0,255,170,0.02);
-
-    overflow: hidden;
-
-    z-index: 1;
-}
-
-
-/* animated light */
-
-.hero-light {
-
-    position: absolute;
-
-    width: 350px;
-
-    height: 350px;
-
-    border-radius: 50%;
-
-    right: -150px;
-
-    top: -180px;
-
-    background:
-
-        radial-gradient(
-            circle,
-            rgba(0,255,170,0.2),
-            transparent 65%
-        );
-
-    animation: heroPulse 4s infinite;
-}
-
-
-@keyframes heroPulse {
-
-    0%,100% {
-        transform: scale(0.9);
+        animation: gridmove 12s linear infinite;
     }
 
-    50% {
-        transform: scale(1.2);
+    @keyframes gridmove {
+        from {
+            transform: translateY(0);
+        }
+
+        to {
+            transform: translateY(45px);
+        }
     }
 
-}
 
+    /* =========================
+       HERO
+       ========================= */
 
-/* =========================================================
-   TYPOGRAPHY
-   ========================================================= */
+    .hero {
+        position: relative;
+        overflow: hidden;
 
-.system {
+        padding: 42px;
 
-    color: #00ffaa;
+        border-radius: 26px;
 
-    font-family: 'Orbitron';
+        background:
+            linear-gradient(
+                135deg,
+                rgba(7, 15, 16, 0.98),
+                rgba(4, 8, 10, 0.96)
+            );
 
-    letter-spacing: 5px;
-
-    font-size: 11px;
-
-    margin-bottom: 15px;
-}
-
-
-.hero-title {
-
-    font-family: 'Orbitron';
-
-    font-size: 52px;
-
-    font-weight: 900;
-
-    letter-spacing: 4px;
-
-    color: white;
-
-    text-shadow:
-        0 0 20px rgba(0,255,170,0.4);
-}
-
-
-.hero-title span {
-
-    color: #00ffaa;
-
-}
-
-
-.hero-subtitle {
-
-    color: #78838a;
-
-    margin-top: 10px;
-
-    font-size: 16px;
-}
-
-
-/* =========================================================
-   ONLINE STATUS
-   ========================================================= */
-
-.online {
-
-    display: inline-flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    margin-top: 25px;
-
-    padding: 8px 15px;
-
-    border-radius: 30px;
-
-    border: 1px solid rgba(0,255,170,0.25);
-
-    background: rgba(0,255,170,0.04);
-
-    color: #00ffaa;
-
-    font-family: 'Orbitron';
-
-    font-size: 10px;
-
-    letter-spacing: 2px;
-}
-
-
-.online-dot {
-
-    width: 8px;
-
-    height: 8px;
-
-    background: #00ffaa;
-
-    border-radius: 50%;
-
-    box-shadow: 0 0 12px #00ffaa;
-
-    animation: blink 1s infinite;
-}
-
-
-@keyframes blink {
-
-    0%,100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.2;
-    }
-
-}
-
-
-/* =========================================================
-   SECTION
-   ========================================================= */
-
-.section {
-
-    font-family: 'Orbitron';
-
-    color: #00ffaa;
-
-    letter-spacing: 3px;
-
-    font-size: 17px;
-
-    margin-top: 30px;
-
-    margin-bottom: 15px;
-}
-
-
-/* =========================================================
-   GLASS CARD
-   ========================================================= */
-
-.glass {
-
-    background:
-
-        linear-gradient(
-            145deg,
-            rgba(12,17,19,0.95),
-            rgba(4,7,8,0.95)
-        );
-
-    border:
-
-        1px solid
-        rgba(255,255,255,0.06);
-
-    border-radius: 20px;
-
-    padding: 25px;
-
-    box-shadow:
-
-        0 15px 40px
-        rgba(0,0,0,0.35),
-
-        inset 0 0 30px
-        rgba(0,255,170,0.015);
-
-    transition: 0.3s;
-
-}
-
-
-.glass:hover {
-
-    transform: translateY(-4px);
-
-    border-color:
-        rgba(0,255,170,0.3);
-
-    box-shadow:
-
-        0 0 30px
-        rgba(0,255,170,0.08);
-}
-
-
-/* =========================================================
-   AI CORE
-   ========================================================= */
-
-.ai-core {
-
-    width: 210px;
-
-    height: 210px;
-
-    margin: 10px auto 25px auto;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    position: relative;
-
-    background:
-
-        radial-gradient(
-            circle,
-            #071412 25%,
-            #020606 55%,
-            transparent 70%
-        );
-
-    border: 2px solid #00ffaa;
-
-    box-shadow:
-
-        0 0 25px rgba(0,255,170,0.4),
-
-        inset 0 0 30px rgba(0,255,170,0.15);
-
-    animation: corePulse 3s infinite;
-}
-
-
-.ai-core:before {
-
-    content: "";
-
-    position: absolute;
-
-    inset: -18px;
-
-    border-radius: 50%;
-
-    border:
-
-        1px dashed
-        rgba(0,255,170,0.5);
-
-    animation:
-        rotate 8s linear infinite;
-}
-
-
-.ai-core:after {
-
-    content: "";
-
-    position: absolute;
-
-    inset: -35px;
-
-    border-radius: 50%;
-
-    border:
-
-        1px solid
-        rgba(0,255,170,0.1);
-
-    animation:
-        rotateReverse 12s linear infinite;
-}
-
-
-@keyframes corePulse {
-
-    0%,100% {
-
-        transform: scale(0.95);
+        border: 1px solid rgba(0,255,170,0.22);
 
         box-shadow:
-            0 0 20px
+            0 0 50px rgba(0,255,170,0.06),
+            inset 0 0 40px rgba(0,255,170,0.025);
+
+        z-index: 1;
+    }
+
+
+    .hero-orb {
+        position: absolute;
+
+        width: 260px;
+        height: 260px;
+
+        right: -80px;
+        top: -100px;
+
+        border-radius: 50%;
+
+        border: 1px solid rgba(0,255,170,0.25);
+
+        box-shadow:
+            0 0 30px rgba(0,255,170,0.15);
+
+        animation: orb 4s ease-in-out infinite;
+    }
+
+    @keyframes orb {
+
+        0%, 100% {
+            transform: scale(0.9);
+            opacity: 0.4;
+        }
+
+        50% {
+            transform: scale(1.15);
+            opacity: 0.9;
+        }
+    }
+
+
+    .hero-small {
+        color: #00ffaa;
+
+        font-size: 11px;
+
+        letter-spacing: 4px;
+
+        font-weight: 700;
+
+        margin-bottom: 12px;
+    }
+
+
+    .hero-title {
+        font-size: 48px;
+
+        font-weight: 900;
+
+        letter-spacing: 3px;
+
+        color: white;
+
+        text-shadow:
+            0 0 20px rgba(0,255,170,0.35);
+    }
+
+
+    .hero-title span {
+        color: #00ffaa;
+    }
+
+
+    .hero-description {
+        margin-top: 12px;
+
+        color: #7d8991;
+
+        font-size: 16px;
+    }
+
+
+    /* =========================
+       STATUS
+       ========================= */
+
+    .status {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 9px;
+
+        margin-top: 22px;
+
+        padding: 8px 14px;
+
+        border-radius: 50px;
+
+        background: rgba(0,255,170,0.04);
+
+        border: 1px solid rgba(0,255,170,0.2);
+
+        color: #00ffaa;
+
+        font-size: 10px;
+
+        letter-spacing: 2px;
+    }
+
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+
+        background: #00ffaa;
+
+        border-radius: 50%;
+
+        box-shadow: 0 0 12px #00ffaa;
+
+        animation: blink 1s infinite;
+    }
+
+
+    @keyframes blink {
+
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.2;
+        }
+    }
+
+
+    /* =========================
+       SECTION
+       ========================= */
+
+    .section-title {
+
+        margin-top: 30px;
+
+        margin-bottom: 16px;
+
+        color: #00ffaa;
+
+        font-size: 16px;
+
+        font-weight: 800;
+
+        letter-spacing: 2px;
+    }
+
+
+    /* =========================
+       GLASS CARD
+       ========================= */
+
+    .glass {
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(13,19,21,0.96),
+                rgba(5,8,9,0.96)
+            );
+
+        border: 1px solid rgba(255,255,255,0.06);
+
+        border-radius: 20px;
+
+        padding: 24px;
+
+        box-shadow:
+            0 12px 35px rgba(0,0,0,0.35);
+
+        transition: 0.3s;
+    }
+
+
+    .glass:hover {
+
+        transform: translateY(-3px);
+
+        border-color:
             rgba(0,255,170,0.25);
-    }
-
-    50% {
-
-        transform: scale(1.05);
 
         box-shadow:
-            0 0 50px
-            rgba(0,255,170,0.55);
+            0 0 25px rgba(0,255,170,0.07);
     }
 
-}
 
+    /* =========================
+       AI CORE
+       ========================= */
 
-@keyframes rotate {
+    .core-container {
 
-    from {
-        transform: rotate(0deg);
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        padding: 15px;
     }
 
-    to {
-        transform: rotate(360deg);
+
+    .core {
+
+        width: 180px;
+        height: 180px;
+
+        border-radius: 50%;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        position: relative;
+
+        background:
+            radial-gradient(
+                circle,
+                #09201b 0%,
+                #04100d 40%,
+                #020605 70%
+            );
+
+        border: 2px solid #00ffaa;
+
+        box-shadow:
+            0 0 20px rgba(0,255,170,0.35),
+            inset 0 0 30px rgba(0,255,170,0.15);
+
+        animation: corepulse 2.5s infinite;
     }
 
-}
 
+    .core:before {
 
-@keyframes rotateReverse {
+        content: "";
 
-    from {
-        transform: rotate(360deg);
+        position: absolute;
+
+        width: 215px;
+        height: 215px;
+
+        border-radius: 50%;
+
+        border: 1px dashed rgba(0,255,170,0.4);
+
+        animation: rotate 8s linear infinite;
     }
 
-    to {
-        transform: rotate(0deg);
+
+    .core:after {
+
+        content: "";
+
+        position: absolute;
+
+        width: 250px;
+        height: 250px;
+
+        border-radius: 50%;
+
+        border: 1px solid rgba(0,150,255,0.12);
+
+        animation: reverseRotate 12s linear infinite;
     }
 
-}
 
+    @keyframes corepulse {
 
-.core-text {
+        0%, 100% {
+            transform: scale(0.95);
+            box-shadow:
+                0 0 20px rgba(0,255,170,0.3);
+        }
 
-    text-align: center;
+        50% {
+            transform: scale(1.05);
+            box-shadow:
+                0 0 45px rgba(0,255,170,0.55);
+        }
+    }
 
-    font-family: 'Orbitron';
 
-    color: #00ffaa;
+    @keyframes rotate {
 
-    font-size: 13px;
+        from {
+            transform: rotate(0deg);
+        }
 
-    letter-spacing: 2px;
+        to {
+            transform: rotate(360deg);
+        }
+    }
 
-}
 
+    @keyframes reverseRotate {
 
-/* =========================================================
-   SCORE
-   ========================================================= */
+        from {
+            transform: rotate(360deg);
+        }
 
-.score {
+        to {
+            transform: rotate(0deg);
+        }
+    }
 
-    font-family: 'Orbitron';
 
-    font-size: 45px;
+    .core-text {
 
-    font-weight: 900;
+        color: #00ffaa;
 
-    color: #00ffaa;
+        text-align: center;
 
-    text-align: center;
+        font-size: 13px;
 
-    text-shadow:
-        0 0 20px
-        rgba(0,255,170,0.6);
-}
+        font-weight: 800;
 
+        letter-spacing: 3px;
+    }
 
-.score-label {
 
-    text-align: center;
+    /* =========================
+       SCORE
+       ========================= */
 
-    color: #657078;
+    .score {
 
-    font-family: 'Orbitron';
+        text-align: center;
 
-    font-size: 10px;
+        color: #00ffaa;
 
-    letter-spacing: 3px;
-}
+        font-size: 44px;
 
+        font-weight: 900;
 
-/* =========================================================
-   METRICS
-   ========================================================= */
+        margin-top: 12px;
 
-.metric {
+        text-shadow:
+            0 0 20px rgba(0,255,170,0.5);
+    }
 
-    padding: 22px;
 
-    background: #070b0d;
+    .score-label {
 
-    border-radius: 17px;
+        text-align: center;
 
-    border: 1px solid #182326;
+        color: #657078;
 
-    text-align: center;
+        font-size: 10px;
 
-    transition: 0.3s;
-}
+        letter-spacing: 2px;
+    }
 
 
-.metric:hover {
+    /* =========================
+       METRIC
+       ========================= */
 
-    border-color: #00ffaa;
+    .metric-card {
 
-    box-shadow:
-        0 0 25px
-        rgba(0,255,170,0.1);
-}
+        text-align: center;
 
+        padding: 22px;
 
-.metric-label {
+        border-radius: 17px;
 
-    font-family: 'Orbitron';
+        background: #070b0d;
 
-    color: #657078;
+        border: 1px solid #182326;
 
-    font-size: 9px;
+        transition: 0.3s;
+    }
 
-    letter-spacing: 2px;
-}
 
+    .metric-card:hover {
 
-.metric-value {
+        border-color: #00ffaa;
 
-    color: white;
+        box-shadow:
+            0 0 25px rgba(0,255,170,0.1);
+    }
 
-    font-family: 'Orbitron';
 
-    font-size: 25px;
+    .metric-label {
 
-    font-weight: 700;
+        color: #66727a;
 
-    margin-top: 8px;
-}
+        font-size: 9px;
 
+        letter-spacing: 2px;
 
-/* =========================================================
-   BUTTON
-   ========================================================= */
+        font-weight: 700;
+    }
 
-.stButton > button {
 
-    height: 58px;
+    .metric-value {
 
-    width: 100%;
+        color: white;
 
-    border-radius: 14px;
+        font-size: 25px;
 
-    border: 1px solid #00ffaa;
+        font-weight: 800;
 
-    background:
+        margin-top: 8px;
+    }
 
-        linear-gradient(
-            90deg,
-            #00ffaa,
-            #00c98b
-        );
 
-    color: #00130d;
+    /* =========================
+       TERMINAL
+       ========================= */
 
-    font-family: 'Orbitron';
+    .terminal {
 
-    font-weight: 900;
+        background: #010303;
 
-    letter-spacing: 2px;
+        border: 1px solid #172326;
 
-    transition: 0.3s;
-}
+        border-radius: 14px;
 
+        padding: 18px;
 
-.stButton > button:hover {
+        color: #00ffaa;
 
-    transform:
-        translateY(-2px)
-        scale(1.01);
+        font-family: monospace;
 
-    box-shadow:
+        font-size: 13px;
 
-        0 0 30px
-        rgba(0,255,170,0.5);
-}
+        line-height: 1.8;
 
+        box-shadow:
+            inset 0 0 25px rgba(0,255,170,0.03);
+    }
 
-/* =========================================================
-   INPUT
-   ========================================================= */
 
-div[data-baseweb="input"] > div {
+    .terminal-title {
 
-    background: #070b0d !important;
+        color: #68757d;
 
-    border:
-        1px solid #1b292d !important;
+        margin-bottom: 8px;
+    }
 
-    border-radius: 12px !important;
-}
 
+    /* =========================
+       RECOMMENDATIONS
+       ========================= */
 
-/* =========================================================
-   RECOMMENDATION
-   ========================================================= */
+    .recommendation {
 
-.recommend {
+        background: #080d0f;
 
-    padding: 16px;
+        border-left: 3px solid #00ffaa;
 
-    margin-bottom: 10px;
+        border-radius: 10px;
 
-    border-radius: 12px;
+        padding: 15px;
 
-    background: #080d0f;
+        margin-bottom: 9px;
 
-    border-left:
-        3px solid #00ffaa;
+        color: #c7d0d5;
 
-    transition: 0.2s;
-}
+        transition: 0.25s;
+    }
 
 
-.recommend:hover {
+    .recommendation:hover {
 
-    transform: translateX(6px);
+        transform: translateX(5px);
 
-    background: #0c1517;
-}
+        background: #0c1517;
+    }
 
 
-/* =========================================================
-   TERMINAL
-   ========================================================= */
+    /* =========================
+       BUTTON
+       ========================= */
 
-.terminal {
+    .stButton > button {
 
-    background: #010303;
+        width: 100%;
 
-    border: 1px solid #172325;
+        height: 56px;
 
-    border-radius: 14px;
+        border-radius: 13px;
 
-    padding: 20px;
+        border: 1px solid #00ffaa;
 
-    font-family: monospace;
+        background:
+            linear-gradient(
+                90deg,
+                #00ffaa,
+                #00c98b
+            );
 
-    color: #00ffaa;
+        color: #00150e;
 
-    line-height: 1.8;
+        font-size: 14px;
 
-    box-shadow:
-        inset 0 0 25px
-        rgba(0,255,170,0.03);
-}
+        font-weight: 900;
 
+        letter-spacing: 1px;
 
-/* =========================================================
-   FOOTER
-   ========================================================= */
+        transition: 0.25s;
+    }
 
-.footer {
 
-    text-align: center;
+    .stButton > button:hover {
 
-    padding: 40px;
+        transform: translateY(-2px);
 
-    color: #374148;
+        box-shadow:
+            0 0 30px rgba(0,255,170,0.45);
+    }
 
-    font-family: 'Orbitron';
 
-    font-size: 9px;
+    /* =========================
+       FOOTER
+       ========================= */
 
-    letter-spacing: 3px;
-}
+    .footer {
 
-</style>
-""", unsafe_allow_html=True)
+        text-align: center;
+
+        margin-top: 50px;
+
+        padding: 30px;
+
+        color: #354047;
+
+        font-size: 10px;
+
+        letter-spacing: 3px;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
+# MOVING GRID
+# ============================================================
+
+st.markdown(
+    '<div class="grid-background"></div>',
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
 # HERO
 # ============================================================
 
-st.markdown("""
-<div class="hero">
-
-<div class="hero-light"></div>
-
-<div class="system">
-NEXUS // NEURAL EDUCATION INTELLIGENCE
-</div>
-
-<div class="hero-title">
-EDU<span>PREDICT</span>
-</div>
-
-<div class="hero-subtitle">
-Predict. Detect. Improve.
-</div>
-
-<div class="online">
-<div class="online-dot"></div>
-AI CORE ONLINE
-</div>
-
-</div>
-""", unsafe_allow_html=True)
-
-
-# ============================================================
-# INPUT
-# ============================================================
-
 st.markdown(
-    '<div class="section">◈ STUDENT NEURAL PROFILE</div>',
+    """
+    <div class="hero">
+
+        <div class="hero-orb"></div>
+
+        <div class="hero-small">
+            NEXUS // EDUCATION INTELLIGENCE
+        </div>
+
+        <div class="hero-title">
+            EDU<span>PREDICT</span>
+        </div>
+
+        <div class="hero-description">
+            Predict academic performance before it becomes a problem.
+        </div>
+
+        <div class="status">
+            <div class="status-dot"></div>
+            AI ENGINE ONLINE
+        </div>
+
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
 
-left, right = st.columns(2)
+# ============================================================
+# INPUT SECTION
+# ============================================================
+
+st.markdown(
+    '<div class="section-title">◈ STUDENT PROFILE</div>',
+    unsafe_allow_html=True
+)
+
+col1, col2 = st.columns(2)
 
 
-with left:
+with col1:
 
     student_name = st.text_input(
-        "Student Identifier",
+        "Student Name",
         placeholder="Enter student name"
     )
 
@@ -878,17 +749,17 @@ with left:
     )
 
     internal_marks = st.slider(
-        "🧠 Internal Performance",
+        "🧠 Internal Marks",
         0,
         100,
         70
     )
 
 
-with right:
+with col2:
 
     assignment_marks = st.slider(
-        "📚 Assignment Performance",
+        "📚 Assignment Marks",
         0,
         100,
         75
@@ -896,14 +767,14 @@ with right:
 
     study_hours = st.number_input(
         "⚡ Study Hours / Day",
-        0.0,
-        15.0,
-        3.0,
-        0.5
+        min_value=0.0,
+        max_value=15.0,
+        value=3.0,
+        step=0.5
     )
 
     previous_score = st.slider(
-        "📈 Previous Score",
+        "📈 Previous Semester Score",
         0,
         100,
         70
@@ -913,8 +784,12 @@ with right:
 st.write("")
 
 
-run = st.button(
-    "⚡ INITIALIZE AI ANALYSIS"
+# ============================================================
+# ANALYZE BUTTON
+# ============================================================
+
+analyze = st.button(
+    "⚡ START AI ANALYSIS"
 )
 
 
@@ -922,82 +797,79 @@ run = st.button(
 # ANALYSIS
 # ============================================================
 
-if run:
+if analyze:
 
-    student = (
-        student_name
-        if student_name
-        else "UNKNOWN STUDENT"
-    )
+    student = student_name.strip()
 
-
-    # ========================================================
-    # AI ANIMATION
-    # ========================================================
-
-    placeholder = st.empty()
+    if student == "":
+        student = "STUDENT-001"
 
 
-    messages = [
+    # --------------------------------------------------------
+    # ANIMATION
+    # --------------------------------------------------------
 
-        "◈ CONNECTING TO AI CORE...",
+    status_box = st.empty()
 
-        "◈ ANALYZING ATTENDANCE SIGNAL...",
 
-        "◈ PROCESSING ACADEMIC FEATURES...",
+    animation_steps = [
 
-        "◈ RUNNING RANDOM FOREST MODEL...",
+        "INITIALIZING NEURAL ENGINE",
 
-        "◈ DETECTING RISK PATTERNS...",
+        "READING ACADEMIC SIGNALS",
 
-        "◈ GENERATING PERSONALIZED STRATEGY..."
+        "NORMALIZING STUDENT DATA",
+
+        "RUNNING RANDOM FOREST",
+
+        "CALCULATING PERFORMANCE",
+
+        "DETECTING RISK PATTERNS",
+
+        "GENERATING AI STRATEGY"
 
     ]
 
 
-    for message in messages:
+    for step in animation_steps:
 
-        placeholder.markdown(
+        status_box.markdown(
             f"""
             <div class="terminal">
 
-            <span style="color:#00ffaa">
-            SYSTEM
-            </span>
+                <div class="terminal-title">
+                    NEXUS AI // SYSTEM LOG
+                </div>
 
-            <br>
+                <span style="color:#00ffaa;">
+                    ●
+                </span>
 
-            {message}
-
-            <span style="animation:blink 1s infinite">
-            █
-            </span>
+                {step}
+                <span style="animation:blink 1s infinite;">
+                    █
+                </span>
 
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        time.sleep(0.45)
+        time.sleep(0.35)
 
 
-    placeholder.empty()
+    status_box.empty()
 
 
-    # ========================================================
-    # MODEL
-    # ========================================================
+    # --------------------------------------------------------
+    # RANDOM FOREST PREDICTION
+    # --------------------------------------------------------
 
     score = predict_score(
-
         attendance,
-
         internal_marks,
-
         assignment_marks,
-
         study_hours,
-
         previous_score
     )
 
@@ -1006,21 +878,16 @@ if run:
 
 
     recommendations = get_recommendations(
-
         attendance,
-
         internal_marks,
-
         assignment_marks,
-
         study_hours,
-
         previous_score
     )
 
 
     st.success(
-        f"AI ANALYSIS COMPLETE // {student.upper()}"
+        f"✓ ANALYSIS COMPLETE — {student}"
     )
 
 
@@ -1029,46 +896,53 @@ if run:
     # ========================================================
 
     st.markdown(
-        '<div class="section">◈ AI CORE</div>',
+        '<div class="section-title">◈ AI CORE OUTPUT</div>',
         unsafe_allow_html=True
     )
 
 
-    core1, core2, core3 = st.columns([1, 2, 1])
+    core_left, core_middle, core_right = st.columns(
+        [1, 2, 1]
+    )
 
 
-    with core2:
+    with core_middle:
 
-        st.markdown(f"""
-        <div class="glass">
+        st.markdown(
+            f"""
+            <div class="glass">
 
-        <div class="ai-core">
+                <div class="core-container">
 
-            <div class="core-text">
+                    <div class="core">
 
-            NEXUS<br>
+                        <div class="core-text">
+                            NEXUS
+                            <br>
+                            <span style="
+                                font-size:9px;
+                                color:#68757d;
+                            ">
+                                ACTIVE
+                            </span>
+                        </div>
 
-            <span style="
-                font-size:10px;
-                color:#68737a;
-            ">
-            ACTIVE
-            </span>
+                    </div>
+
+                </div>
+
+                <div class="score">
+                    {score}%
+                </div>
+
+                <div class="score-label">
+                    PREDICTED PERFORMANCE
+                </div>
 
             </div>
-
-        </div>
-
-        <div class="score">
-            {score}%
-        </div>
-
-        <div class="score-label">
-            PREDICTED PERFORMANCE
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
+            """,
+            unsafe_allow_html=True
+        )
 
 
     # ========================================================
@@ -1076,206 +950,203 @@ if run:
     # ========================================================
 
     st.markdown(
-        '<div class="section">◈ INTELLIGENCE OUTPUT</div>',
+        '<div class="section-title">◈ INTELLIGENCE RESULTS</div>',
         unsafe_allow_html=True
     )
-
-
-    a, b, c = st.columns(3)
-
-
-    if risk == "LOW":
-
-        risk_icon = "🟢"
-
-    elif risk == "MEDIUM":
-
-        risk_icon = "🟡"
-
-    else:
-
-        risk_icon = "🔴"
 
 
     if score >= 85:
-
         performance = "EXCELLENT"
+        performance_icon = "🏆"
 
     elif score >= 75:
-
         performance = "GOOD"
+        performance_icon = "⭐"
 
     elif score >= 60:
-
         performance = "AVERAGE"
+        performance_icon = "📘"
 
     else:
-
         performance = "CRITICAL"
+        performance_icon = "⚠️"
 
 
-    with a:
+    if risk == "LOW":
+        risk_icon = "🟢"
 
-        st.markdown(f"""
-        <div class="metric">
+    elif risk == "MEDIUM":
+        risk_icon = "🟡"
 
-        <div class="metric-label">
-        PREDICTED SCORE
-        </div>
-
-        <div class="metric-value">
-        {score}%
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
+    else:
+        risk_icon = "🔴"
 
 
-    with b:
-
-        st.markdown(f"""
-        <div class="metric">
-
-        <div class="metric-label">
-        RISK STATUS
-        </div>
-
-        <div class="metric-value">
-        {risk_icon} {risk}
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
 
 
-    with c:
+    with c1:
 
-        st.markdown(f"""
-        <div class="metric">
+        st.markdown(
+            f"""
+            <div class="metric-card">
 
-        <div class="metric-label">
-        PERFORMANCE
-        </div>
+                <div class="metric-label">
+                    AI SCORE
+                </div>
 
-        <div class="metric-value">
-        {performance}
-        </div>
+                <div class="metric-value">
+                    {score}%
+                </div>
 
-        </div>
-        """, unsafe_allow_html=True)
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    with c2:
+
+        st.markdown(
+            f"""
+            <div class="metric-card">
+
+                <div class="metric-label">
+                    RISK LEVEL
+                </div>
+
+                <div class="metric-value">
+                    {risk_icon} {risk}
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    with c3:
+
+        st.markdown(
+            f"""
+            <div class="metric-card">
+
+                <div class="metric-label">
+                    PERFORMANCE
+                </div>
+
+                <div class="metric-value">
+                    {performance_icon} {performance}
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 
     # ========================================================
-    # SIGNAL ANALYSIS
+    # PERFORMANCE GRAPH
     # ========================================================
 
     st.markdown(
-        '<div class="section">◈ SIGNAL ANALYSIS</div>',
+        '<div class="section-title">◈ ACADEMIC SIGNALS</div>',
         unsafe_allow_html=True
     )
 
 
-    chart = pd.DataFrame({
-
-        "Score": [
-
-            attendance,
-
-            internal_marks,
-
-            assignment_marks,
-
-            previous_score,
-
-            score
-
+    chart_data = pd.DataFrame(
+        {
+            "Score": [
+                attendance,
+                internal_marks,
+                assignment_marks,
+                previous_score,
+                score
+            ]
+        },
+        index=[
+            "Attendance",
+            "Internal",
+            "Assignments",
+            "Previous",
+            "AI Prediction"
         ]
-
-    }, index=[
-
-        "Attendance",
-
-        "Internal",
-
-        "Assignments",
-
-        "Previous",
-
-        "AI Prediction"
-
-    ])
+    )
 
 
-    st.bar_chart(chart)
+    st.bar_chart(chart_data)
 
 
     # ========================================================
-    # RISK ENGINE
+    # RISK DETECTION
     # ========================================================
 
     st.markdown(
-        '<div class="section">◈ RISK ENGINE</div>',
+        '<div class="section-title">◈ EARLY WARNING ENGINE</div>',
         unsafe_allow_html=True
     )
 
 
-    factors = []
+    risks = []
 
 
     if attendance < 75:
 
-        factors.append(
-            "⚠ Attendance below safe threshold"
+        risks.append(
+            "Attendance is below the recommended level."
         )
 
 
     if internal_marks < 60:
 
-        factors.append(
-            "⚠ Internal marks require improvement"
+        risks.append(
+            "Internal marks require improvement."
         )
 
 
     if assignment_marks < 60:
 
-        factors.append(
-            "⚠ Assignment performance is weak"
+        risks.append(
+            "Assignment performance is below target."
         )
 
 
     if study_hours < 2:
 
-        factors.append(
-            "⚠ Study time is below recommended level"
+        risks.append(
+            "Daily study time is low."
         )
 
 
     if previous_score < 60:
 
-        factors.append(
-            "⚠ Previous academic performance is low"
+        risks.append(
+            "Previous semester score indicates risk."
         )
 
 
-    if not factors:
+    if len(risks) == 0:
 
         st.success(
-            "✓ SYSTEM STATUS: NO CRITICAL SIGNALS"
+            "✓ NO MAJOR RISK SIGNALS DETECTED"
         )
 
     else:
 
-        for factor in factors:
+        for item in risks:
 
-            st.warning(factor)
+            st.warning(
+                "⚠ " + item
+            )
 
 
     # ========================================================
-    # RECOMMENDATIONS
+    # AI RECOMMENDATIONS
     # ========================================================
 
     st.markdown(
-        '<div class="section">◈ AI STRATEGY GENERATOR</div>',
+        '<div class="section-title">◈ PERSONALIZED AI STRATEGY</div>',
         unsafe_allow_html=True
     )
 
@@ -1283,81 +1154,69 @@ if run:
     for recommendation in recommendations:
 
         st.markdown(
-
             f"""
-            <div class="recommend">
+            <div class="recommendation">
 
-            <span style="
-                color:#00ffaa;
-                font-family:Orbitron;
-            ">
-            AI →
-            </span>
+                <span style="
+                    color:#00ffaa;
+                    font-weight:800;
+                ">
+                    AI →
+                </span>
 
-            {recommendation}
+                {recommendation}
 
             </div>
             """,
-
             unsafe_allow_html=True
-
         )
 
 
     # ========================================================
-    # FUTURE SIMULATOR
+    # WHAT IF SIMULATOR
     # ========================================================
 
     st.markdown(
-        '<div class="section">◈ FUTURE SIMULATION</div>',
+        '<div class="section-title">◈ FUTURE SIMULATOR</div>',
         unsafe_allow_html=True
     )
 
 
-    st.markdown("""
-    <div class="glass">
+    st.markdown(
+        """
+        <div class="glass">
 
-    <b>WHAT-IF ENGINE</b>
+            <b>WHAT-IF ENGINE</b>
 
-    <br><br>
+            <br><br>
 
-    Modify attendance and see how the
-    AI prediction responds.
+            Increase attendance and simulate
+            a possible future performance.
 
-    </div>
-    """, unsafe_allow_html=True)
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
     simulated_attendance = st.slider(
-
         "Simulated Attendance",
-
         int(attendance),
-
         100,
-
-        min(
-            int(attendance + 10),
-            100
-        )
+        min(int(attendance + 10), 100)
     )
 
 
     simulated_score = predict_score(
-
         simulated_attendance,
-
         internal_marks,
-
         assignment_marks,
-
         study_hours,
-
         previous_score
     )
 
 
-    change = round(
+    improvement = round(
         simulated_score - score,
         1
     )
@@ -1385,8 +1244,8 @@ if run:
     with x3:
 
         st.metric(
-            "IMPROVEMENT",
-            f"{change:+.1f}%"
+            "POTENTIAL",
+            f"{improvement:+.1f}%"
         )
 
 
@@ -1394,19 +1253,21 @@ if run:
 # FOOTER
 # ============================================================
 
-st.markdown("""
-<div class="footer">
+st.markdown(
+    """
+    <div class="footer">
 
-NEXUS AI
+        NEXUS AI
 
-<br><br>
+        <br><br>
 
-EDUCATION INTELLIGENCE SYSTEM
+        PREDICT • DETECT • IMPROVE
 
-<br><br>
+        <br><br>
 
-PREDICT • DETECT • IMPROVE
+        AI STUDENT PERFORMANCE INTELLIGENCE SYSTEM
 
-</div>
-""", unsafe_allow_html=True)
-import streamlit 
+    </div>
+    """,
+    unsafe_allow_html=True
+)
