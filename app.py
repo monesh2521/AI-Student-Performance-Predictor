@@ -716,9 +716,11 @@ if analyze:
 
         <div class="score-ring">
 
-            <div class="score-number">
-                {score}
-            </div>
+
+        <div class="score-number" id="scoreNumber">
+            {score}%
+        </div>
+
 
         </div>
 
