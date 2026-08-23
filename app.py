@@ -2,7 +2,6 @@
 import streamlit as st
 import pandas as pd
 import time
-import random
 
 from model import (
     predict_score,
@@ -11,751 +10,597 @@ from model import (
 )
 
 # =========================================================
-# PAGE
+# PAGE CONFIG
 # =========================================================
 
 st.set_page_config(
-    page_title="VOID AI",
-    page_icon="✦",
+    page_title="NEXUS AI | Student Intelligence",
+    page_icon="◈",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # =========================================================
-# STYLE
+# DARK FUTURISTIC CSS
+# =========================================================
+
+st.markdown("""
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ================= BODY ================= */
+
+.stApp {
+    background:
+        radial-gradient(circle at 10% 10%, rgba(0,255,170,0.08), transparent 25%),
+        radial-gradient(circle at 90% 20%, rgba(90,0,255,0.10), transparent 25%),
+        radial-gradient(circle at 50% 100%, rgba(0,150,255,0.08), transparent 30%),
+        #030506;
+    color: #e5e7eb;
+}
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+#MainMenu {
+    visibility: hidden;
+}
+
+header {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+
+/* ================= SCANLINES ================= */
+
+.stApp:before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,0.015) 0px,
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    z-index: 999;
+}
+
+
+/* ================= HERO ================= */
+
+.hero {
+
+    position: relative;
+
+    padding: 45px;
+
+    border-radius: 28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(10,15,20,0.96),
+            rgba(5,20,20,0.92)
+        );
+
+    border: 1px solid rgba(0,255,170,0.25);
+
+    box-shadow:
+        0 0 30px rgba(0,255,170,0.08),
+        inset 0 0 40px rgba(0,255,170,0.02);
+
+    overflow: hidden;
+
+    margin-bottom: 25px;
+}
+
+
+.hero:after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 250px;
+    height: 250px;
+
+    border-radius: 50%;
+
+    right: -100px;
+    top: -100px;
+
+    border: 1px solid rgba(0,255,170,0.25);
+
+    box-shadow:
+        0 0 30px rgba(0,255,170,0.2);
+
+    animation: pulse 3s infinite;
+}
+
+
+@keyframes pulse {
+
+    0% {
+        transform: scale(0.8);
+        opacity: 0.3;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(0.8);
+        opacity: 0.3;
+    }
+}
+
+
+.system {
+
+    color: #00ffaa;
+
+    font-family: 'Orbitron';
+
+    font-size: 12px;
+
+    letter-spacing: 4px;
+
+    margin-bottom: 15px;
+}
+
+
+.hero-title {
+
+    font-family: 'Orbitron';
+
+    font-size: 44px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    color: white;
+
+    text-shadow:
+        0 0 15px rgba(0,255,170,0.5);
+}
+
+
+.hero-title span {
+
+    color: #00ffaa;
+
+}
+
+
+.hero-subtitle {
+
+    margin-top: 10px;
+
+    color: #8b949e;
+
+    font-size: 16px;
+}
+
+
+/* ================= STATUS ================= */
+
+.status {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 25px;
+
+    padding: 8px 15px;
+
+    border-radius: 50px;
+
+    background: rgba(0,255,170,0.05);
+
+    border: 1px solid rgba(0,255,170,0.2);
+
+    color: #00ffaa;
+
+    font-family: 'Orbitron';
+
+    font-size: 11px;
+}
+
+
+.status-dot {
+
+    width: 8px;
+    height: 8px;
+
+    background: #00ffaa;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 8px #00ffaa;
+
+    animation: blink 1.2s infinite;
+}
+
+
+@keyframes blink {
+
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+}
+
+
+/* ================= SECTION ================= */
+
+.section {
+
+    font-family: 'Orbitron';
+
+    font-size: 18px;
+
+    letter-spacing: 2px;
+
+    color: #00ffaa;
+
+    margin-top: 25px;
+
+    margin-bottom: 15px;
+}
+
+
+/* ================= GLASS CARD ================= */
+
+.card {
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16,20,24,0.95),
+            rgba(5,8,10,0.95)
+        );
+
+    border: 1px solid #1c272b;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.35);
+
+    transition: all 0.3s ease;
+}
+
+
+.card:hover {
+
+    transform: translateY(-4px);
+
+    border-color: rgba(0,255,170,0.4);
+
+    box-shadow:
+        0 0 25px rgba(0,255,170,0.08);
+}
+
+
+/* ================= METRICS ================= */
+
+.metric {
+
+    background: #080b0d;
+
+    border: 1px solid #172125;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    text-align: center;
+
+    transition: 0.3s;
+}
+
+
+.metric:hover {
+
+    border-color: #00ffaa;
+
+    box-shadow:
+        0 0 20px rgba(0,255,170,0.1);
+}
+
+
+.metric-label {
+
+    color: #68737a;
+
+    font-size: 11px;
+
+    font-family: 'Orbitron';
+
+    letter-spacing: 2px;
+}
+
+
+.metric-value {
+
+    color: white;
+
+    font-family: 'Orbitron';
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+    margin-top: 8px;
+}
+
+
+/* ================= BUTTON ================= */
+
+.stButton > button {
+
+    height: 55px;
+
+    border-radius: 12px;
+
+    border: 1px solid #00ffaa;
+
+    background:
+        linear-gradient(
+            90deg,
+            #00ffaa,
+            #00c98b
+        );
+
+    color: #00150e;
+
+    font-family: 'Orbitron';
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    transition: all 0.25s ease;
+}
+
+
+.stButton > button:hover {
+
+    transform: scale(1.01);
+
+    box-shadow:
+        0 0 25px rgba(0,255,170,0.45);
+}
+
+
+/* ================= INPUTS ================= */
+
+div[data-baseweb="input"] > div {
+
+    background: #080b0d !important;
+
+    border: 1px solid #1b292d !important;
+
+    border-radius: 10px !important;
+
+}
+
+
+div[data-baseweb="select"] > div {
+
+    background: #080b0d !important;
+
+    border-radius: 10px !important;
+
+}
+
+
+/* ================= SCORE RING ================= */
+
+.score-ring {
+
+    width: 190px;
+
+    height: 190px;
+
+    border-radius: 50%;
+
+    margin: 20px auto;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle,
+            #050809 55%,
+            transparent 56%
+        );
+
+    border: 5px solid #00ffaa;
+
+    box-shadow:
+        0 0 15px rgba(0,255,170,0.4),
+        inset 0 0 20px rgba(0,255,170,0.15);
+
+    animation: ringpulse 2.5s infinite;
+}
+
+
+@keyframes ringpulse {
+
+    0%,100% {
+        box-shadow:
+            0 0 15px rgba(0,255,170,0.25),
+            inset 0 0 15px rgba(0,255,170,0.1);
+    }
+
+    50% {
+        box-shadow:
+            0 0 35px rgba(0,255,170,0.55),
+            inset 0 0 25px rgba(0,255,170,0.2);
+    }
+}
+
+
+.score-number {
+
+    font-family: 'Orbitron';
+
+    font-size: 42px;
+
+    font-weight: 800;
+
+    color: #00ffaa;
+}
+
+
+/* ================= RECOMMENDATIONS ================= */
+
+.recommendation {
+
+    background: #080c0e;
+
+    border-left: 3px solid #00ffaa;
+
+    padding: 16px;
+
+    border-radius: 10px;
+
+    margin-bottom: 10px;
+
+    color: #c9d1d9;
+
+    transition: 0.2s;
+}
+
+
+.recommendation:hover {
+
+    background: #0c1315;
+
+    transform: translateX(5px);
+}
+
+
+/* ================= RISK ================= */
+
+.low {
+
+    color: #00ffaa;
+
+    text-shadow:
+        0 0 10px rgba(0,255,170,0.5);
+}
+
+
+.medium {
+
+    color: #ffd166;
+
+    text-shadow:
+        0 0 10px rgba(255,209,102,0.4);
+}
+
+
+.high {
+
+    color: #ff4d6d;
+
+    text-shadow:
+        0 0 10px rgba(255,77,109,0.5);
+}
+
+
+/* ================= FOOTER ================= */
+
+.footer {
+
+    text-align: center;
+
+    color: #465057;
+
+    font-size: 11px;
+
+    font-family: 'Orbitron';
+
+    letter-spacing: 2px;
+
+    padding: 25px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+# =========================================================
+# HERO
+# =========================================================
+
+st.markdown("""
+<div class="hero">
+
+<div class="system">
+NEXUS // STUDENT INTELLIGENCE SYSTEM
+</div>
+
+<div class="hero-title">
+EDU<span>PREDICT</span> AI
+</div>
+
+<div class="hero-subtitle">
+AI-powered academic intelligence & early-warning system
+</div>
+
+<div class="status">
+<div class="status-dot"></div>
+AI CORE ONLINE
+</div>
+
+</div>
+""", unsafe_allow_html=True)
+
+
+# =========================================================
+# INPUT SECTION
 # =========================================================
 
 st.markdown(
-    """
-    <style>
-
-    /* =========================================
-       BLACK SPACE BACKGROUND
-       ========================================= */
-
-    .stApp {
-        background:
-            radial-gradient(
-                circle at 50% 30%,
-                rgba(0,255,190,0.07),
-                transparent 25%
-            ),
-            radial-gradient(
-                circle at 20% 80%,
-                rgba(70,0,255,0.08),
-                transparent 30%
-            ),
-            #000000;
-
-        color: #ffffff;
-    }
-
-    header,
-    footer,
-    #MainMenu {
-        visibility: hidden;
-    }
-
-
-    /* =========================================
-       STAR FIELD
-       ========================================= */
-
-    .stars {
-        position: fixed;
-        inset: 0;
-
-        pointer-events: none;
-
-        background-image:
-            radial-gradient(#ffffff 1px, transparent 1px),
-            radial-gradient(#00ffc3 1px, transparent 1px),
-            radial-gradient(#ffffff 1px, transparent 1px);
-
-        background-size:
-            120px 120px,
-            190px 190px,
-            260px 260px;
-
-        background-position:
-            10px 20px,
-            40px 80px,
-            100px 30px;
-
-        opacity: .25;
-
-        animation: starsMove 25s linear infinite;
-
-        z-index: 0;
-    }
-
-
-    @keyframes starsMove {
-
-        from {
-            transform: translateY(0);
-        }
-
-        to {
-            transform: translateY(120px);
-        }
-
-    }
-
-
-    /* =========================================
-       TOP BRAND
-       ========================================= */
-
-    .brand {
-
-        text-align: center;
-
-        margin-top: 15px;
-
-        font-size: 12px;
-
-        letter-spacing: 8px;
-
-        color: #00ffc3;
-
-        font-weight: 700;
-
-        text-shadow:
-            0 0 15px #00ffc3;
-    }
-
-
-    .title {
-
-        text-align: center;
-
-        font-size: 58px;
-
-        font-weight: 900;
-
-        letter-spacing: 7px;
-
-        margin-top: 12px;
-
-        color: #ffffff;
-
-        text-shadow:
-            0 0 25px rgba(0,255,195,.25);
-    }
-
-
-    .title span {
-
-        color: #00ffc3;
-
-        text-shadow:
-            0 0 30px #00ffc3;
-    }
-
-
-    .subtitle {
-
-        text-align: center;
-
-        color: #555f66;
-
-        letter-spacing: 4px;
-
-        font-size: 11px;
-
-        margin-bottom: 35px;
-    }
-
-
-    /* =========================================
-       GLASS PANELS
-       ========================================= */
-
-    .panel {
-
-        background:
-            linear-gradient(
-                145deg,
-                rgba(12,14,16,.92),
-                rgba(3,4,5,.96)
-            );
-
-        border:
-
-            1px solid
-            rgba(255,255,255,.08);
-
-        border-radius: 24px;
-
-        padding: 25px;
-
-        box-shadow:
-            0 20px 50px rgba(0,0,0,.6);
-
-        transition: .3s;
-
-    }
-
-
-    .panel:hover {
-
-        border-color:
-            rgba(0,255,195,.35);
-
-        box-shadow:
-            0 0 35px
-            rgba(0,255,195,.07);
-
-        transform:
-            translateY(-3px);
-    }
-
-
-    /* =========================================
-       SECTION
-       ========================================= */
-
-    .section {
-
-        color: #00ffc3;
-
-        font-size: 12px;
-
-        letter-spacing: 4px;
-
-        font-weight: 800;
-
-        margin-top: 28px;
-
-        margin-bottom: 15px;
-    }
-
-
-    /* =========================================
-       AI PLANET
-       ========================================= */
-
-    .planet {
-
-        width: 220px;
-
-        height: 220px;
-
-        margin: 10px auto 25px auto;
-
-        border-radius: 50%;
-
-        position: relative;
-
-        display: flex;
-
-        justify-content: center;
-
-        align-items: center;
-
-        background:
-
-            radial-gradient(
-                circle at 35% 30%,
-                #23ffe0,
-                #064c40 15%,
-                #011713 35%,
-                #000000 70%
-            );
-
-        border:
-            2px solid
-            rgba(0,255,195,.8);
-
-        box-shadow:
-
-            0 0 30px
-            rgba(0,255,195,.6),
-
-            0 0 100px
-            rgba(0,255,195,.18),
-
-            inset 0 0 40px
-            rgba(0,255,195,.4);
-
-        animation:
-            planetPulse 4s ease-in-out infinite;
-    }
-
-
-    .planet:before {
-
-        content: "";
-
-        position: absolute;
-
-        width: 290px;
-
-        height: 90px;
-
-        border-radius: 50%;
-
-        border:
-            1px solid
-            rgba(0,255,195,.7);
-
-        transform:
-            rotate(-18deg);
-
-        box-shadow:
-            0 0 20px
-            rgba(0,255,195,.15);
-
-        animation:
-            orbit 6s linear infinite;
-    }
-
-
-    .planet:after {
-
-        content: "";
-
-        position: absolute;
-
-        width: 340px;
-
-        height: 110px;
-
-        border-radius: 50%;
-
-        border:
-            1px dashed
-            rgba(80,100,255,.35);
-
-        transform:
-            rotate(35deg);
-
-        animation:
-            reverseOrbit 10s linear infinite;
-    }
-
-
-    @keyframes planetPulse {
-
-        0%,100% {
-
-            transform:
-                scale(.94);
-
-        }
-
-        50% {
-
-            transform:
-                scale(1.05);
-
-        }
-
-    }
-
-
-    @keyframes orbit {
-
-        from {
-
-            transform:
-                rotate(-18deg)
-                rotate(0deg);
-
-        }
-
-        to {
-
-            transform:
-                rotate(-18deg)
-                rotate(360deg);
-
-        }
-
-    }
-
-
-    @keyframes reverseOrbit {
-
-        from {
-
-            transform:
-                rotate(35deg)
-                rotate(360deg);
-
-        }
-
-        to {
-
-            transform:
-                rotate(35deg)
-                rotate(0deg);
-
-        }
-
-    }
-
-
-    .planet-text {
-
-        text-align: center;
-
-        font-size: 14px;
-
-        font-weight: 900;
-
-        letter-spacing: 4px;
-
-        color: white;
-
-        text-shadow:
-            0 0 15px #00ffc3;
-    }
-
-
-    /* =========================================
-       SCORE
-       ========================================= */
-
-    .score {
-
-        text-align: center;
-
-        font-size: 60px;
-
-        font-weight: 900;
-
-        color: #00ffc3;
-
-        text-shadow:
-            0 0 30px #00ffc3;
-
-        animation:
-            scoreGlow 2s infinite;
-    }
-
-
-    @keyframes scoreGlow {
-
-        0%,100% {
-
-            text-shadow:
-                0 0 15px #00ffc3;
-
-        }
-
-        50% {
-
-            text-shadow:
-                0 0 40px #00ffc3;
-
-        }
-
-    }
-
-
-    .score-label {
-
-        text-align: center;
-
-        color: #58636a;
-
-        letter-spacing: 4px;
-
-        font-size: 9px;
-    }
-
-
-    /* =========================================
-       METRICS
-       ========================================= */
-
-    .metric {
-
-        background:
-            rgba(8,10,12,.9);
-
-        border:
-            1px solid
-            rgba(255,255,255,.07);
-
-        border-radius: 18px;
-
-        padding: 20px;
-
-        text-align: center;
-
-        transition: .3s;
-    }
-
-
-    .metric:hover {
-
-        border-color:
-            #00ffc3;
-
-        box-shadow:
-            0 0 25px
-            rgba(0,255,195,.12);
-
-    }
-
-
-    .metric-title {
-
-        color: #59636b;
-
-        font-size: 9px;
-
-        letter-spacing: 3px;
-    }
-
-
-    .metric-value {
-
-        font-size: 25px;
-
-        font-weight: 900;
-
-        margin-top: 8px;
-
-        color: #ffffff;
-    }
-
-
-    /* =========================================
-       SCANNER
-       ========================================= */
-
-    .scanner {
-
-        height: 6px;
-
-        width: 100%;
-
-        background: #081012;
-
-        border-radius: 10px;
-
-        overflow: hidden;
-
-        margin-top: 15px;
-    }
-
-
-    .scanner-line {
-
-        height: 100%;
-
-        width: 30%;
-
-        background:
-            linear-gradient(
-                90deg,
-                transparent,
-                #00ffc3,
-                transparent
-            );
-
-        box-shadow:
-            0 0 15px #00ffc3;
-
-        animation:
-            scan 2s linear infinite;
-    }
-
-
-    @keyframes scan {
-
-        from {
-
-            transform:
-                translateX(-150%);
-
-        }
-
-        to {
-
-            transform:
-                translateX(450%);
-
-        }
-
-    }
-
-
-    /* =========================================
-       RECOMMENDATIONS
-       ========================================= */
-
-    .advice {
-
-        padding: 16px;
-
-        border-radius: 12px;
-
-        margin-bottom: 10px;
-
-        background:
-            rgba(8,12,14,.9);
-
-        border-left:
-            3px solid
-            #00ffc3;
-
-        transition: .25s;
-    }
-
-
-    .advice:hover {
-
-        transform:
-            translateX(7px);
-
-        background:
-            rgba(0,255,195,.04);
-    }
-
-
-    /* =========================================
-       BUTTON
-       ========================================= */
-
-    .stButton > button {
-
-        width: 100%;
-
-        height: 58px;
-
-        border-radius: 16px;
-
-        background:
-            linear-gradient(
-                90deg,
-                #00ffc3,
-                #00aaff
-            );
-
-        border: none;
-
-        color: #00100c;
-
-        font-size: 13px;
-
-        font-weight: 900;
-
-        letter-spacing: 3px;
-
-        transition: .3s;
-
-    }
-
-
-    .stButton > button:hover {
-
-        transform:
-            translateY(-3px)
-            scale(1.01);
-
-        box-shadow:
-            0 0 35px
-            rgba(0,255,195,.5);
-
-    }
-
-
-    /* =========================================
-       FOOTER
-       ========================================= */
-
-    .footer {
-
-        text-align: center;
-
-        color: #30383e;
-
-        font-size: 9px;
-
-        letter-spacing: 5px;
-
-        padding: 45px;
-
-    }
-
-    </style>
-    """,
+    '<div class="section">◈ STUDENT DATA INPUT</div>',
     unsafe_allow_html=True
 )
 
+c1, c2 = st.columns(2)
 
-# =========================================================
-# STAR FIELD
-# =========================================================
+with c1:
 
-st.markdown(
-    '<div class="stars"></div>',
-    unsafe_allow_html=True
-)
-
-
-# =========================================================
-# HEADER
-# =========================================================
-
-st.markdown(
-    '<div class="brand">◈ ARTIFICIAL INTELLIGENCE LAB ◈</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="title">VOID <span>AI</span></div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="subtitle">STUDENT PERFORMANCE PREDICTION SYSTEM</div>',
-    unsafe_allow_html=True
-)
-
-
-# =========================================================
-# LIVE STATUS
-# =========================================================
-
-status1, status2, status3, status4 = st.columns(4)
-
-with status1:
-    st.metric("AI CORE", "ONLINE")
-
-with status2:
-    st.metric("MODEL", "RF-01")
-
-with status3:
-    st.metric("ENGINE", "ACTIVE")
-
-with status4:
-    st.metric("MODE", "PREDICT")
-
-
-# =========================================================
-# INPUT
-# =========================================================
-
-st.markdown(
-    '<div class="section">◈ ENTER STUDENT DATA</div>',
-    unsafe_allow_html=True
-)
-
-
-left, right = st.columns(2)
-
-
-with left:
-
-    student_name = st.text_input(
+    name = st.text_input(
         "Student ID / Name",
-        placeholder="e.g. ARMAAN"
+        placeholder="Enter student name"
     )
 
     attendance = st.slider(
@@ -765,7 +610,7 @@ with left:
         80
     )
 
-    internal = st.slider(
+    internal_marks = st.slider(
         "Internal Marks",
         0,
         100,
@@ -773,25 +618,25 @@ with left:
     )
 
 
-with right:
+with c2:
 
-    assignments = st.slider(
-        "Assignment Marks",
+    assignment_marks = st.slider(
+        "Assignment Performance",
         0,
         100,
         75
     )
 
     study_hours = st.number_input(
-        "Daily Study Hours",
-        min_value=0.0,
-        max_value=15.0,
-        value=3.0,
-        step=.5
+        "Study Hours / Day",
+        0.0,
+        15.0,
+        3.0,
+        0.5
     )
 
-    previous = st.slider(
-        "Previous Score",
+    previous_score = st.slider(
+        "Previous Semester Score",
         0,
         100,
         70
@@ -800,149 +645,166 @@ with right:
 
 st.write("")
 
-
-# =========================================================
-# START
-# =========================================================
-
-start = st.button(
-    "✦ LAUNCH PREDICTION ENGINE"
+analyze = st.button(
+    "⚡ RUN AI PERFORMANCE ANALYSIS"
 )
 
 
-if start:
+# =========================================================
+# ANALYSIS
+# =========================================================
 
-    student = (
-        student_name.strip()
-        if student_name.strip()
-        else "STUDENT-001"
-    )
+if analyze:
 
+    student = name if name else "STUDENT-001"
 
-    # =====================================================
-    # SCANNING ANIMATION
-    # =====================================================
+    with st.spinner("◈ NEXUS AI CORE ANALYZING DATA..."):
 
-    animation = st.empty()
+        time.sleep(1)
 
-
-    messages = [
-
-        "CONNECTING TO VOID AI",
-
-        "LOCKING STUDENT PROFILE",
-
-        "SCANNING ACADEMIC DATA",
-
-        "EXTRACTING PERFORMANCE FEATURES",
-
-        "RUNNING RANDOM FOREST",
-
-        "CALCULATING RISK PROBABILITY",
-
-        "BUILDING FUTURE SCENARIO",
-
-        "AI ANALYSIS COMPLETE"
-
-    ]
-
-
-    for message in messages:
-
-        animation.markdown(
-            f"""
-            <div class="panel">
-
-                <div style="
-                    color:#00ffc3;
-                    font-family:monospace;
-                    letter-spacing:2px;
-                ">
-
-                ◉ SYSTEM &gt; {message}
-
-                </div>
-
-                <div class="scanner">
-
-                    <div class="scanner-line"></div>
-
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
+        score = predict_score(
+            attendance,
+            internal_marks,
+            assignment_marks,
+            study_hours,
+            previous_score
         )
 
-        time.sleep(.35)
+        risk = get_risk(score)
+
+        recommendations = get_recommendations(
+            attendance,
+            internal_marks,
+            assignment_marks,
+            study_hours,
+            previous_score
+        )
 
 
-    animation.empty()
-
-
-    # =====================================================
-    # PREDICTION
-    # =====================================================
-
-    score = predict_score(
-        attendance,
-        internal,
-        assignments,
-        study_hours,
-        previous
-    )
-
-
-    risk = get_risk(score)
-
-
-    recommendations = get_recommendations(
-        attendance,
-        internal,
-        assignments,
-        study_hours,
-        previous
+    st.success(
+        f"AI ANALYSIS COMPLETE // {student.upper()}"
     )
 
 
     # =====================================================
-    # AI CORE
+    # SCORE
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ NEURAL PLANET</div>',
+        '<div class="section">◈ AI PREDICTION</div>',
         unsafe_allow_html=True
     )
 
 
-    a, b, c = st.columns([1,2,1])
+    score_col, info_col = st.columns([1, 2])
 
 
-    with b:
+    with score_col:
+
+        st.markdown(f"""
+        <div class="card">
+
+        <div style="
+            text-align:center;
+            color:#68737a;
+            font-family:Orbitron;
+            font-size:11px;
+            letter-spacing:2px;
+        ">
+        PREDICTED SCORE
+        </div>
+
+        <div class="score-ring">
+
+            <div class="score-number">
+                {score}%
+            </div>
+
+        </div>
+
+        <div style="
+            text-align:center;
+            color:#68737a;
+            font-size:12px;
+        ">
+        MODEL CONFIDENCE OUTPUT
+        </div>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+
+    with info_col:
+
+        m1, m2 = st.columns(2)
+
+        with m1:
+
+            st.markdown(f"""
+            <div class="metric">
+
+            <div class="metric-label">
+            RISK LEVEL
+            </div>
+
+            <div class="metric-value">
+
+            {"🟢" if risk=="LOW"
+             else "🟡" if risk=="MEDIUM"
+             else "🔴"}
+
+            {risk}
+
+            </div>
+
+            </div>
+            """, unsafe_allow_html=True)
+
+
+        with m2:
+
+            if score >= 85:
+                performance = "EXCELLENT"
+            elif score >= 75:
+                performance = "GOOD"
+            elif score >= 60:
+                performance = "AVERAGE"
+            else:
+                performance = "CRITICAL"
+
+
+            st.markdown(f"""
+            <div class="metric">
+
+            <div class="metric-label">
+            PERFORMANCE
+            </div>
+
+            <div class="metric-value">
+            {performance}
+            </div>
+
+            </div>
+            """, unsafe_allow_html=True)
+
+
+        st.write("")
 
         st.markdown(
-            """
-            <div class="panel">
+            f"""
+            <div class="card">
 
-                <div class="planet">
+            <b>AI STATUS</b>
 
-                    <div class="planet-text">
+            <br><br>
 
-                        VOID AI
+            Model successfully analyzed
+            <b>{student}</b>'s academic profile.
 
-                        <br>
+            <br><br>
 
-                        <span style="
-                            color:#69757d;
-                            font-size:9px;
-                            letter-spacing:2px;
-                        ">
-                            NEURAL CORE
-                        </span>
-
-                    </div>
-
-                </div>
+            Prediction:
+            <b>{score}%</b>
 
             </div>
             """,
@@ -950,143 +812,24 @@ if start:
         )
 
 
-        st.markdown(
-            f'<div class="score">{score}%</div>',
-            unsafe_allow_html=True
-        )
-
-
-        st.markdown(
-            '<div class="score-label">PREDICTED PERFORMANCE</div>',
-            unsafe_allow_html=True
-        )
-
-
     # =====================================================
-    # RESULT
+    # ACADEMIC SIGNALS
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ AI DECISION</div>',
+        '<div class="section">◈ ACADEMIC SIGNALS</div>',
         unsafe_allow_html=True
     )
 
 
-    if risk == "LOW":
+    signal_data = pd.DataFrame({
 
-        risk_text = "🟢 LOW"
-
-    elif risk == "MEDIUM":
-
-        risk_text = "🟡 MEDIUM"
-
-    else:
-
-        risk_text = "🔴 HIGH"
-
-
-    if score >= 85:
-
-        performance = "🏆 EXCELLENT"
-
-    elif score >= 75:
-
-        performance = "⭐ GOOD"
-
-    elif score >= 60:
-
-        performance = "📘 AVERAGE"
-
-    else:
-
-        performance = "⚠️ CRITICAL"
-
-
-    c1, c2, c3 = st.columns(3)
-
-
-    with c1:
-
-        st.markdown(
-            f"""
-            <div class="metric">
-
-                <div class="metric-title">
-                    PREDICTED SCORE
-                </div>
-
-                <div class="metric-value">
-                    {score}%
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
-    with c2:
-
-        st.markdown(
-            f"""
-            <div class="metric">
-
-                <div class="metric-title">
-                    RISK LEVEL
-                </div>
-
-                <div class="metric-value">
-                    {risk_text}
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
-    with c3:
-
-        st.markdown(
-            f"""
-            <div class="metric">
-
-                <div class="metric-title">
-                    PERFORMANCE
-                </div>
-
-                <div class="metric-value">
-                    {performance}
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
-    # =====================================================
-    # GRAPH
-    # =====================================================
-
-    st.markdown(
-        '<div class="section">◈ ACADEMIC ENERGY MAP</div>',
-        unsafe_allow_html=True
-    )
-
-
-    graph = pd.DataFrame({
-
-        "Performance": [
+        "Score": [
 
             attendance,
-
-            internal,
-
-            assignments,
-
-            previous,
-
+            internal_marks,
+            assignment_marks,
+            previous_score,
             score
 
         ]
@@ -1094,19 +837,17 @@ if start:
     }, index=[
 
         "Attendance",
-
         "Internal",
-
         "Assignments",
-
         "Previous",
-
         "AI Prediction"
 
     ])
 
 
-    st.bar_chart(graph)
+    st.bar_chart(
+        signal_data
+    )
 
 
     # =====================================================
@@ -1114,88 +855,79 @@ if start:
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ THREAT DETECTION</div>',
+        '<div class="section">◈ RISK DETECTION ENGINE</div>',
         unsafe_allow_html=True
     )
 
 
-    warnings = []
+    factors = []
 
 
     if attendance < 75:
-
-        warnings.append(
-            "Attendance anomaly detected"
+        factors.append(
+            "LOW ATTENDANCE DETECTED"
         )
 
-
-    if internal < 60:
-
-        warnings.append(
-            "Low internal assessment signal"
+    if internal_marks < 60:
+        factors.append(
+            "LOW INTERNAL PERFORMANCE"
         )
 
-
-    if assignments < 60:
-
-        warnings.append(
-            "Assignment performance anomaly"
+    if assignment_marks < 60:
+        factors.append(
+            "ASSIGNMENT PERFORMANCE BELOW TARGET"
         )
-
 
     if study_hours < 2:
+        factors.append(
+            "INSUFFICIENT STUDY HOURS"
+        )
 
-        warnings.append(
-            "Insufficient study-time signal"
+    if previous_score < 60:
+        factors.append(
+            "PREVIOUS PERFORMANCE BELOW TARGET"
         )
 
 
-    if previous < 60:
+    if not factors:
 
-        warnings.append(
-            "Historical performance risk"
+        st.success(
+            "✓ NO CRITICAL RISK SIGNALS DETECTED"
         )
-
-
-    if warnings:
-
-        for warning in warnings:
-
-            st.warning(
-                "⚠ " + warning
-            )
 
     else:
 
-        st.success(
-            "✓ NO HIGH-RISK SIGNALS DETECTED"
-        )
+        for factor in factors:
+
+            st.warning(
+                "⚠ " + factor
+            )
 
 
     # =====================================================
-    # AI ADVISOR
+    # AI RECOMMENDATIONS
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ AI MISSION PLAN</div>',
+        '<div class="section">◈ AI ACTION PLAN</div>',
         unsafe_allow_html=True
     )
 
 
-    for recommendation in recommendations:
+    for rec in recommendations:
 
         st.markdown(
             f"""
-            <div class="advice">
+            <div class="recommendation">
 
-                <span style="
-                    color:#00ffc3;
-                    font-weight:900;
-                ">
-                AI →
-                </span>
+            <span style="
+                color:#00ffaa;
+                font-family:Orbitron;
+            ">
+            AI →
+            </span>
 
-                {recommendation}
+            {rec}
 
             </div>
             """,
@@ -1204,42 +936,57 @@ if start:
 
 
     # =====================================================
-    # FUTURE
+    # WHAT IF
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ FUTURE SIMULATION</div>',
+        '<div class="section">◈ FUTURE SIMULATOR</div>',
         unsafe_allow_html=True
     )
 
 
-    future = st.slider(
-        "Simulate Improved Attendance",
+    st.markdown("""
+    <div class="card">
+
+    Simulate an improvement and observe
+    how the AI prediction changes.
+
+    </div>
+    """, unsafe_allow_html=True)
+
+
+    simulated_attendance = st.slider(
+        "Simulated Attendance",
         int(attendance),
         100,
-        min(95, int(attendance + 10))
+        min(int(attendance + 10), 100)
     )
 
 
-    future_score = predict_score(
-        future,
-        internal,
-        assignments,
+    simulated_score = predict_score(
+
+        simulated_attendance,
+
+        internal_marks,
+
+        assignment_marks,
+
         study_hours,
-        previous
+
+        previous_score
     )
 
 
-    gain = round(
-        future_score - score,
+    difference = round(
+        simulated_score - score,
         1
     )
 
 
-    f1, f2, f3 = st.columns(3)
+    x1, x2, x3 = st.columns(3)
 
 
-    with f1:
+    with x1:
 
         st.metric(
             "CURRENT",
@@ -1247,19 +994,19 @@ if start:
         )
 
 
-    with f2:
+    with x2:
 
         st.metric(
-            "FUTURE",
-            f"{future_score}%"
+            "SIMULATED",
+            f"{simulated_score}%"
         )
 
 
-    with f3:
+    with x3:
 
         st.metric(
-            "POTENTIAL GAIN",
-            f"{gain:+.1f}%"
+            "CHANGE",
+            f"{difference:+.1f}%"
         )
 
 
@@ -1267,21 +1014,14 @@ if start:
 # FOOTER
 # =========================================================
 
-st.markdown(
-    """
-    <div class="footer">
+st.markdown("""
+<div class="footer">
 
-        VOID AI
+NEXUS AI // EDU-PREDICT
 
-        <br><br>
+<br><br>
 
-        PREDICT • DETECT • SIMULATE • IMPROVE
+STUDENT INTELLIGENCE • EARLY WARNING • PERSONALIZED ACTION
 
-        <br><br>
-
-        STUDENT PERFORMANCE INTELLIGENCE
-
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+</div>
+""", unsafe_allow_html=True)
