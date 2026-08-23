@@ -67,7 +67,6 @@ st.markdown(
         visibility: hidden;
     }
 
-
     /* =========================
        MOVING GRID
        ========================= */
@@ -107,7 +106,6 @@ st.markdown(
         }
     }
 
-
     /* =========================
        HERO
        ========================= */
@@ -135,7 +133,6 @@ st.markdown(
 
         z-index: 1;
     }
-
 
     .hero-orb {
         position: absolute;
@@ -169,7 +166,6 @@ st.markdown(
         }
     }
 
-
     .hero-small {
         color: #00ffaa;
 
@@ -181,7 +177,6 @@ st.markdown(
 
         margin-bottom: 12px;
     }
-
 
     .hero-title {
         font-size: 48px;
@@ -196,11 +191,9 @@ st.markdown(
             0 0 20px rgba(0,255,170,0.35);
     }
 
-
     .hero-title span {
         color: #00ffaa;
     }
-
 
     .hero-description {
         margin-top: 12px;
@@ -209,7 +202,6 @@ st.markdown(
 
         font-size: 16px;
     }
-
 
     /* =========================
        STATUS
@@ -239,7 +231,6 @@ st.markdown(
         letter-spacing: 2px;
     }
 
-
     .status-dot {
         width: 8px;
         height: 8px;
@@ -253,7 +244,6 @@ st.markdown(
         animation: blink 1s infinite;
     }
 
-
     @keyframes blink {
 
         0%, 100% {
@@ -264,7 +254,6 @@ st.markdown(
             opacity: 0.2;
         }
     }
-
 
     /* =========================
        SECTION
@@ -284,7 +273,6 @@ st.markdown(
 
         letter-spacing: 2px;
     }
-
 
     /* =========================
        GLASS CARD
@@ -311,7 +299,6 @@ st.markdown(
         transition: 0.3s;
     }
 
-
     .glass:hover {
 
         transform: translateY(-3px);
@@ -322,7 +309,6 @@ st.markdown(
         box-shadow:
             0 0 25px rgba(0,255,170,0.07);
     }
-
 
     /* =========================
        AI CORE
@@ -338,7 +324,6 @@ st.markdown(
 
         padding: 15px;
     }
-
 
     .core {
 
@@ -372,7 +357,6 @@ st.markdown(
         animation: corepulse 2.5s infinite;
     }
 
-
     .core:before {
 
         content: "";
@@ -388,7 +372,6 @@ st.markdown(
 
         animation: rotate 8s linear infinite;
     }
-
 
     .core:after {
 
@@ -406,7 +389,6 @@ st.markdown(
         animation: reverseRotate 12s linear infinite;
     }
 
-
     @keyframes corepulse {
 
         0%, 100% {
@@ -422,7 +404,6 @@ st.markdown(
         }
     }
 
-
     @keyframes rotate {
 
         from {
@@ -434,7 +415,6 @@ st.markdown(
         }
     }
 
-
     @keyframes reverseRotate {
 
         from {
@@ -445,7 +425,6 @@ st.markdown(
             transform: rotate(0deg);
         }
     }
-
 
     .core-text {
 
@@ -459,7 +438,6 @@ st.markdown(
 
         letter-spacing: 3px;
     }
-
 
     /* =========================
        SCORE
@@ -481,7 +459,6 @@ st.markdown(
             0 0 20px rgba(0,255,170,0.5);
     }
 
-
     .score-label {
 
         text-align: center;
@@ -492,7 +469,6 @@ st.markdown(
 
         letter-spacing: 2px;
     }
-
 
     /* =========================
        METRIC
@@ -513,7 +489,6 @@ st.markdown(
         transition: 0.3s;
     }
 
-
     .metric-card:hover {
 
         border-color: #00ffaa;
@@ -521,7 +496,6 @@ st.markdown(
         box-shadow:
             0 0 25px rgba(0,255,170,0.1);
     }
-
 
     .metric-label {
 
@@ -534,7 +508,6 @@ st.markdown(
         font-weight: 700;
     }
 
-
     .metric-value {
 
         color: white;
@@ -545,7 +518,6 @@ st.markdown(
 
         margin-top: 8px;
     }
-
 
     /* =========================
        TERMINAL
@@ -573,14 +545,12 @@ st.markdown(
             inset 0 0 25px rgba(0,255,170,0.03);
     }
 
-
     .terminal-title {
 
         color: #68757d;
 
         margin-bottom: 8px;
     }
-
 
     /* =========================
        RECOMMENDATIONS
@@ -603,14 +573,12 @@ st.markdown(
         transition: 0.25s;
     }
 
-
     .recommendation:hover {
 
         transform: translateX(5px);
 
         background: #0c1517;
     }
-
 
     /* =========================
        BUTTON
@@ -644,7 +612,6 @@ st.markdown(
         transition: 0.25s;
     }
 
-
     .stButton > button:hover {
 
         transform: translateY(-2px);
@@ -652,7 +619,6 @@ st.markdown(
         box-shadow:
             0 0 30px rgba(0,255,170,0.45);
     }
-
 
     /* =========================
        FOOTER
@@ -733,7 +699,6 @@ st.markdown(
 
 col1, col2 = st.columns(2)
 
-
 with col1:
 
     student_name = st.text_input(
@@ -754,7 +719,6 @@ with col1:
         100,
         70
     )
-
 
 with col2:
 
@@ -780,7 +744,6 @@ with col2:
         70
     )
 
-
 st.write("")
 
 
@@ -804,35 +767,23 @@ if analyze:
     if student == "":
         student = "STUDENT-001"
 
-
     # --------------------------------------------------------
     # ANIMATION
     # --------------------------------------------------------
 
     status_box = st.empty()
 
-
     animation_steps = [
-
         "INITIALIZING NEURAL ENGINE",
-
         "READING ACADEMIC SIGNALS",
-
         "NORMALIZING STUDENT DATA",
-
         "RUNNING RANDOM FOREST",
-
         "CALCULATING PERFORMANCE",
-
         "DETECTING RISK PATTERNS",
-
         "GENERATING AI STRATEGY"
-
     ]
 
-
     for step in animation_steps:
-
         status_box.markdown(
             f"""
             <div class="terminal">
@@ -857,9 +808,7 @@ if analyze:
 
         time.sleep(0.35)
 
-
     status_box.empty()
-
 
     # --------------------------------------------------------
     # RANDOM FOREST PREDICTION
@@ -873,9 +822,7 @@ if analyze:
         previous_score
     )
 
-
     risk = get_risk(score)
-
 
     recommendations = get_recommendations(
         attendance,
@@ -885,11 +832,9 @@ if analyze:
         previous_score
     )
 
-
     st.success(
         f"✓ ANALYSIS COMPLETE — {student}"
     )
-
 
     # ========================================================
     # AI CORE
@@ -900,11 +845,9 @@ if analyze:
         unsafe_allow_html=True
     )
 
-
     core_left, core_middle, core_right = st.columns(
         [1, 2, 1]
     )
-
 
     with core_middle:
 
@@ -944,7 +887,6 @@ if analyze:
             unsafe_allow_html=True
         )
 
-
     # ========================================================
     # METRICS
     # ========================================================
@@ -953,7 +895,6 @@ if analyze:
         '<div class="section-title">◈ INTELLIGENCE RESULTS</div>',
         unsafe_allow_html=True
     )
-
 
     if score >= 85:
         performance = "EXCELLENT"
@@ -971,7 +912,6 @@ if analyze:
         performance = "CRITICAL"
         performance_icon = "⚠️"
 
-
     if risk == "LOW":
         risk_icon = "🟢"
 
@@ -981,9 +921,7 @@ if analyze:
     else:
         risk_icon = "🔴"
 
-
     c1, c2, c3 = st.columns(3)
-
 
     with c1:
 
@@ -1004,7 +942,6 @@ if analyze:
             unsafe_allow_html=True
         )
 
-
     with c2:
 
         st.markdown(
@@ -1023,7 +960,6 @@ if analyze:
             """,
             unsafe_allow_html=True
         )
-
 
     with c3:
 
@@ -1044,7 +980,6 @@ if analyze:
             unsafe_allow_html=True
         )
 
-
     # ========================================================
     # PERFORMANCE GRAPH
     # ========================================================
@@ -1053,7 +988,6 @@ if analyze:
         '<div class="section-title">◈ ACADEMIC SIGNALS</div>',
         unsafe_allow_html=True
     )
-
 
     chart_data = pd.DataFrame(
         {
@@ -1074,9 +1008,7 @@ if analyze:
         ]
     )
 
-
     st.bar_chart(chart_data)
-
 
     # ========================================================
     # RISK DETECTION
@@ -1087,59 +1019,43 @@ if analyze:
         unsafe_allow_html=True
     )
 
-
     risks = []
 
-
     if attendance < 75:
-
         risks.append(
             "Attendance is below the recommended level."
         )
 
-
     if internal_marks < 60:
-
         risks.append(
             "Internal marks require improvement."
         )
 
-
     if assignment_marks < 60:
-
         risks.append(
             "Assignment performance is below target."
         )
 
-
     if study_hours < 2:
-
         risks.append(
             "Daily study time is low."
         )
 
-
     if previous_score < 60:
-
         risks.append(
             "Previous semester score indicates risk."
         )
 
-
     if len(risks) == 0:
-
         st.success(
             "✓ NO MAJOR RISK SIGNALS DETECTED"
         )
 
     else:
-
         for item in risks:
-
             st.warning(
                 "⚠ " + item
             )
-
 
     # ========================================================
     # AI RECOMMENDATIONS
@@ -1150,9 +1066,7 @@ if analyze:
         unsafe_allow_html=True
     )
 
-
     for recommendation in recommendations:
-
         st.markdown(
             f"""
             <div class="recommendation">
@@ -1171,7 +1085,6 @@ if analyze:
             unsafe_allow_html=True
         )
 
-
     # ========================================================
     # WHAT IF SIMULATOR
     # ========================================================
@@ -1180,7 +1093,6 @@ if analyze:
         '<div class="section-title">◈ FUTURE SIMULATOR</div>',
         unsafe_allow_html=True
     )
-
 
     st.markdown(
         """
@@ -1198,14 +1110,28 @@ if analyze:
         unsafe_allow_html=True
     )
 
+    # --------------------------------------------------------
+    # FIX: guard against min_value == max_value crash when
+    # attendance is already 100 (or within 10 of 100).
+    # --------------------------------------------------------
 
-    simulated_attendance = st.slider(
-        "Simulated Attendance",
-        int(attendance),
-        100,
-        min(int(attendance + 10), 100)
-    )
+    sim_min = int(attendance)
+    sim_max = 100
 
+    if sim_min >= sim_max:
+        st.info(
+            "Attendance is already at 100% — no further "
+            "simulation possible."
+        )
+        simulated_attendance = sim_min
+
+    else:
+        simulated_attendance = st.slider(
+            "Simulated Attendance",
+            sim_min,
+            sim_max,
+            min(sim_min + 10, sim_max)
+        )
 
     simulated_score = predict_score(
         simulated_attendance,
@@ -1215,34 +1141,26 @@ if analyze:
         previous_score
     )
 
-
     improvement = round(
         simulated_score - score,
         1
     )
 
-
     x1, x2, x3 = st.columns(3)
 
-
     with x1:
-
         st.metric(
             "CURRENT",
             f"{score}%"
         )
 
-
     with x2:
-
         st.metric(
             "SIMULATED",
             f"{simulated_score}%"
         )
 
-
     with x3:
-
         st.metric(
             "POTENTIAL",
             f"{improvement:+.1f}%"
@@ -1271,3 +1189,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
