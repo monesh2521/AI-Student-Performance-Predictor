@@ -717,7 +717,6 @@ if analyze:
         <div class="score-ring">
 
             <div class="score-number">
-                {score}%
             </div>
 
         </div>
