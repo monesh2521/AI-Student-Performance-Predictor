@@ -25,13 +25,10 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
+    font-family: Arial, sans-serif;
 }
 
-/* Main background */
 .stApp {
     background: linear-gradient(
         135deg,
@@ -41,7 +38,6 @@ html, body, [class*="css"] {
     );
 }
 
-/* Hide Streamlit branding */
 #MainMenu {
     visibility: hidden;
 }
@@ -50,13 +46,8 @@ footer {
     visibility: hidden;
 }
 
-header {
-    visibility: hidden;
-}
-
-/* Hero */
 .hero {
-    padding: 35px 35px 30px 35px;
+    padding: 35px;
     border-radius: 24px;
     background: linear-gradient(
         135deg,
@@ -89,7 +80,6 @@ header {
     font-size: 13px;
 }
 
-/* Section title */
 .section-title {
     font-size: 24px;
     font-weight: 800;
@@ -97,7 +87,6 @@ header {
     margin-top: 20px;
 }
 
-/* Metric cards */
 .metric-card {
     background: white;
     padding: 22px;
@@ -120,7 +109,6 @@ header {
     margin-top: 5px;
 }
 
-/* Risk cards */
 .low-risk {
     background: #ecfdf5;
     border: 1px solid #a7f3d0;
@@ -147,7 +135,6 @@ header {
     font-size: 24px;
 }
 
-/* Recommendation */
 .recommendation {
     background: white;
     border-left: 5px solid #4f46e5;
@@ -157,15 +144,6 @@ header {
     box-shadow: 0 5px 15px rgba(15,23,42,0.05);
 }
 
-/* Info box */
-.info-card {
-    background: white;
-    padding: 20px;
-    border-radius: 18px;
-    border: 1px solid #e5e7eb;
-}
-
-/* Button */
 .stButton > button {
     width: 100%;
     border-radius: 14px;
@@ -179,23 +157,10 @@ header {
     );
     color: white;
     border: none;
-    transition: 0.3s;
-}
-
-.stButton > button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(79,70,229,0.3);
-}
-
-/* Input styling */
-div[data-baseweb="input"] > div,
-div[data-baseweb="select"] > div {
-    border-radius: 12px;
 }
 
 </style>
 """, unsafe_allow_html=True)
-
 
 # =====================================================
 # SIDEBAR
@@ -205,25 +170,27 @@ with st.sidebar:
 
     st.markdown("## 🎓 EduPredict AI")
 
-    st.caption("Smart Academic Early-Warning System")
+    st.caption(
+        "Smart Academic Early-Warning System"
+    )
 
     st.divider()
 
     st.markdown("### 🧠 How it works")
 
     st.write("""
-    **1. Input Data**  
-    Enter academic information.
+**1. Input Data**  
+Enter academic information.
 
-    **2. AI Analysis**  
-    Random Forest analyzes the data.
+**2. AI Analysis**  
+Random Forest analyzes the data.
 
-    **3. Risk Detection**  
-    Identify academic risk.
+**3. Risk Detection**  
+Identify academic risk.
 
-    **4. Personalized Advice**  
-    Get improvement recommendations.
-    """)
+**4. Personalized Advice**  
+Get improvement recommendations.
+""")
 
     st.divider()
 
@@ -237,7 +204,9 @@ with st.sidebar:
 
     st.divider()
 
-    st.caption("Hackathon Prototype • 2026")
+    st.caption(
+        "Hackathon Prototype • 2026"
+    )
 
 
 # =====================================================
@@ -247,7 +216,9 @@ with st.sidebar:
 st.markdown("""
 <div class="hero">
 
-<div class="badge">🤖 AI-POWERED EDUCATION</div>
+<div class="badge">
+🤖 AI-POWERED EDUCATION
+</div>
 
 <div class="hero-title">
 EduPredict AI
@@ -271,7 +242,9 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.write("Enter the student's current academic information.")
+st.write(
+    "Enter the student's current academic information."
+)
 
 col1, col2 = st.columns(2)
 
@@ -286,8 +259,7 @@ with col1:
         "📅 Attendance",
         0,
         100,
-        80,
-        help="Overall attendance percentage"
+        80
     )
 
     internal_marks = st.slider(
@@ -321,7 +293,6 @@ with col2:
         70
     )
 
-
 st.write("")
 
 predict = st.button(
@@ -338,7 +309,9 @@ if predict:
     if not student_name:
         student_name = "Student"
 
-    with st.spinner("🤖 AI is analyzing academic patterns..."):
+    with st.spinner(
+        "🤖 AI is analyzing academic patterns..."
+    ):
 
         score = predict_score(
             attendance,
@@ -358,7 +331,6 @@ if predict:
             previous_score
         )
 
-
     st.success(
         f"Analysis completed for **{student_name}**"
     )
@@ -375,99 +347,96 @@ if predict:
 
     c1, c2, c3 = st.columns(3)
 
-
     with c1:
 
-        st.markdown(f"""
-        <div class="metric-card">
+        st.markdown(
+            f"""
+            <div class="metric-card">
 
-        <div class="metric-label">
-        PREDICTED FINAL SCORE
-        </div>
+            <div class="metric-label">
+            PREDICTED FINAL SCORE
+            </div>
 
-        <div class="metric-value">
-        {score}%
-        </div>
+            <div class="metric-value">
+            {score}%
+            </div>
 
-        </div>
-        """, unsafe_allow_html=True)
-
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     with c2:
 
         if risk == "LOW":
-
             risk_class = "low-risk"
             risk_icon = "🟢"
 
         elif risk == "MEDIUM":
-
             risk_class = "medium-risk"
             risk_icon = "🟡"
 
         else:
-
             risk_class = "high-risk"
             risk_icon = "🔴"
 
+        st.markdown(
+            f"""
+            <div class="risk-card {risk_class}">
 
-        st.markdown(f"""
-        <div class="risk-card {risk_class}">
+            {risk_icon}<br>
 
-        {risk_icon}<br>
+            <span style="font-size:14px;">
+            ACADEMIC RISK
+            </span>
 
-        <span style="font-size:14px;">
-        ACADEMIC RISK
-        </span>
+            <br>
 
-        <br>
+            {risk}
 
-        {risk}
-
-        </div>
-        """, unsafe_allow_html=True)
-
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     with c3:
 
         if score >= 85:
-
             performance = "Excellent"
             icon = "🏆"
 
         elif score >= 75:
-
             performance = "Good"
             icon = "⭐"
 
         elif score >= 60:
-
             performance = "Average"
             icon = "📘"
 
         else:
-
             performance = "Needs Improvement"
             icon = "⚠️"
 
+        st.markdown(
+            f"""
+            <div class="metric-card">
 
-        st.markdown(f"""
-        <div class="metric-card">
+            <div class="metric-label">
+            PERFORMANCE
+            </div>
 
-        <div class="metric-label">
-        PERFORMANCE
-        </div>
+            <div class="metric-value">
+            {icon} {performance}
+            </div>
 
-        <div class="metric-value">
-        {icon} {performance}
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 
     # =================================================
-    # SCORE PROGRESS
+    # PERFORMANCE SCORE
     # =================================================
 
     st.markdown(
@@ -495,7 +464,6 @@ if predict:
 
     risk_factors = []
 
-
     if attendance < 75:
 
         risk_factors.append(
@@ -508,13 +476,11 @@ if predict:
             f"📅 Attendance could be improved ({attendance}%)."
         )
 
-
     if internal_marks < 60:
 
         risk_factors.append(
             f"📝 Internal marks are low ({internal_marks})."
         )
-
 
     if assignment_marks < 60:
 
@@ -522,20 +488,17 @@ if predict:
             f"📚 Assignment performance needs attention ({assignment_marks})."
         )
 
-
     if study_hours < 2:
 
         risk_factors.append(
             f"⏱️ Study time is low ({study_hours} hrs/day)."
         )
 
-
     if previous_score < 60:
 
         risk_factors.append(
             f"📈 Previous score indicates an improvement area ({previous_score}%)."
         )
-
 
     if not risk_factors:
 
@@ -546,12 +509,11 @@ if predict:
     else:
 
         for factor in risk_factors:
-
             st.warning(factor)
 
 
     # =================================================
-    # PERSONALIZED RECOMMENDATIONS
+    # RECOMMENDATIONS
     # =================================================
 
     st.markdown(
@@ -572,7 +534,7 @@ if predict:
 
 
     # =================================================
-    # ACADEMIC CHART
+    # CHART
     # =================================================
 
     st.markdown(
@@ -580,33 +542,30 @@ if predict:
         unsafe_allow_html=True
     )
 
-    chart_data = pd.DataFrame({
-
-        "Score": [
-
-            attendance,
-            internal_marks,
-            assignment_marks,
-            previous_score,
-            score
-
+    chart_data = pd.DataFrame(
+        {
+            "Score": [
+                attendance,
+                internal_marks,
+                assignment_marks,
+                previous_score,
+                score
+            ]
+        },
+        index=[
+            "Attendance",
+            "Internal",
+            "Assignments",
+            "Previous Score",
+            "AI Prediction"
         ]
-
-    }, index=[
-
-        "Attendance",
-        "Internal",
-        "Assignments",
-        "Previous Score",
-        "AI Prediction"
-
-    ])
+    )
 
     st.bar_chart(chart_data)
 
 
     # =================================================
-    # WHAT-IF ANALYSIS
+    # WHAT-IF SIMULATOR
     # =================================================
 
     st.markdown(
@@ -625,30 +584,20 @@ if predict:
         value=min(attendance + 10, 100)
     )
 
-
     simulated_score = predict_score(
-
         improved_attendance,
-
         internal_marks,
-
         assignment_marks,
-
         study_hours,
-
         previous_score
-
     )
-
 
     difference = round(
         simulated_score - score,
         1
     )
 
-
     w1, w2, w3 = st.columns(3)
-
 
     with w1:
 
@@ -657,14 +606,12 @@ if predict:
             f"{score}%"
         )
 
-
     with w2:
 
         st.metric(
             "Simulated Score",
             f"{simulated_score}%"
         )
-
 
     with w3:
 
@@ -686,35 +633,35 @@ if predict:
     if risk == "HIGH":
 
         st.error("""
-        **Priority:** Immediate academic intervention
+**Priority: Immediate academic intervention**
 
-        • Increase study consistency  
-        • Improve attendance  
-        • Meet faculty/mentor  
-        • Focus on weak subjects
-        """)
+- Increase study consistency
+- Improve attendance
+- Meet faculty or mentor
+- Focus on weak subjects
+""")
 
     elif risk == "MEDIUM":
 
         st.warning("""
-        **Priority:** Prevent performance decline
+**Priority: Prevent performance decline**
 
-        • Maintain regular revision  
-        • Improve assignments  
-        • Increase study hours  
-        • Track weekly progress
-        """)
+- Maintain regular revision
+- Improve assignments
+- Increase study hours
+- Track weekly progress
+""")
 
     else:
 
         st.success("""
-        **Priority:** Maintain and optimize
+**Priority: Maintain and optimize**
 
-        • Continue current routine  
-        • Challenge yourself with advanced topics  
-        • Maintain attendance  
-        • Keep consistent revision
-        """)
+- Continue current routine
+- Challenge yourself with advanced topics
+- Maintain attendance
+- Keep consistent revision
+""")
 
 
 # =====================================================
@@ -737,6 +684,7 @@ st.divider()
 
 st.markdown(
     "<center>🎓 <b>EduPredict AI</b> • "
-    "AI Student Performance Early-Warning System • Hackathon 2026</center>",
+    "AI Student Performance Early-Warning System • "
+    "Hackathon 2026</center>",
     unsafe_allow_html=True
 )
