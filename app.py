@@ -2,7 +2,7 @@
 import streamlit as st
 import pandas as pd
 import time
-import math
+import random
 
 from model import (
     predict_score,
@@ -11,312 +11,755 @@ from model import (
 )
 
 # =========================================================
-# CONFIG
+# PAGE
 # =========================================================
 
 st.set_page_config(
-    page_title="AURA AI",
-    page_icon="◉",
+    page_title="VOID AI",
+    page_icon="✦",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # =========================================================
-# DARK UI
+# STYLE
 # =========================================================
 
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
 
-.stApp {
-    background:
-        radial-gradient(circle at 10% 20%, #06251e 0%, transparent 25%),
-        radial-gradient(circle at 90% 10%, #101d3d 0%, transparent 25%),
-        radial-gradient(circle at 50% 100%, #160b28 0%, transparent 30%),
-        #030507;
-    color: #f5f7fa;
-}
+    /* =========================================
+       BLACK SPACE BACKGROUND
+       ========================================= */
 
-header, footer, #MainMenu {
-    visibility: hidden;
-}
+    .stApp {
+        background:
+            radial-gradient(
+                circle at 50% 30%,
+                rgba(0,255,190,0.07),
+                transparent 25%
+            ),
+            radial-gradient(
+                circle at 20% 80%,
+                rgba(70,0,255,0.08),
+                transparent 30%
+            ),
+            #000000;
 
-/* Animated background */
-
-.stApp::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-
-    background-image:
-        linear-gradient(rgba(0,255,190,.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,190,.025) 1px, transparent 1px);
-
-    background-size: 60px 60px;
-
-    animation: movegrid 15s linear infinite;
-}
-
-@keyframes movegrid {
-    from { transform: translateY(0); }
-    to { transform: translateY(60px); }
-}
-
-/* Main title */
-
-.main-title {
-    font-size: 52px;
-    font-weight: 900;
-    letter-spacing: 5px;
-    color: white;
-    text-align: center;
-    margin-top: 10px;
-}
-
-.main-title span {
-    color: #00ffc3;
-    text-shadow: 0 0 25px #00ffc3;
-}
-
-.subtitle {
-    text-align: center;
-    color: #718096;
-    letter-spacing: 3px;
-    margin-bottom: 30px;
-}
-
-/* Cards */
-
-.card {
-    background: rgba(9,14,18,.85);
-    border: 1px solid rgba(0,255,195,.14);
-    border-radius: 22px;
-    padding: 25px;
-    box-shadow: 0 15px 40px rgba(0,0,0,.35);
-    margin-bottom: 15px;
-    transition: .3s;
-}
-
-.card:hover {
-    border-color: rgba(0,255,195,.5);
-    box-shadow: 0 0 30px rgba(0,255,195,.08);
-}
-
-/* Section */
-
-.section {
-    color: #00ffc3;
-    font-weight: 800;
-    letter-spacing: 3px;
-    font-size: 14px;
-    margin: 25px 0 15px;
-}
-
-/* AI Orb */
-
-.orb {
-    width: 170px;
-    height: 170px;
-    margin: auto;
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        radial-gradient(circle,
-        #00ffc3 0%,
-        #073b31 18%,
-        #03110e 45%,
-        #020506 70%);
-
-    border: 2px solid #00ffc3;
-
-    box-shadow:
-        0 0 25px #00ffc3,
-        0 0 80px rgba(0,255,195,.25);
-
-    animation: orb 3s infinite;
-}
-
-@keyframes orb {
-    0%,100% {
-        transform: scale(.94);
-        box-shadow:
-            0 0 20px #00ffc3;
+        color: #ffffff;
     }
 
-    50% {
-        transform: scale(1.05);
-        box-shadow:
-            0 0 55px #00ffc3;
+    header,
+    footer,
+    #MainMenu {
+        visibility: hidden;
     }
-}
 
-.orb-text {
-    text-align: center;
-    color: white;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 2px;
-}
 
-/* Score */
+    /* =========================================
+       STAR FIELD
+       ========================================= */
 
-.big-score {
-    text-align: center;
-    font-size: 55px;
-    font-weight: 900;
-    color: #00ffc3;
-    text-shadow: 0 0 25px #00ffc3;
-}
+    .stars {
+        position: fixed;
+        inset: 0;
 
-/* Metric */
+        pointer-events: none;
 
-.metric {
-    text-align: center;
-    padding: 20px;
-    background: #080d11;
-    border-radius: 16px;
-    border: 1px solid #18242a;
-}
+        background-image:
+            radial-gradient(#ffffff 1px, transparent 1px),
+            radial-gradient(#00ffc3 1px, transparent 1px),
+            radial-gradient(#ffffff 1px, transparent 1px);
 
-.metric-title {
-    color: #66737d;
-    font-size: 10px;
-    letter-spacing: 2px;
-}
+        background-size:
+            120px 120px,
+            190px 190px,
+            260px 260px;
 
-.metric-value {
-    color: white;
-    font-size: 26px;
-    font-weight: 800;
-    margin-top: 7px;
-}
+        background-position:
+            10px 20px,
+            40px 80px,
+            100px 30px;
 
-/* AI log */
+        opacity: .25;
 
-.log {
-    background: #020405;
-    border: 1px solid #142127;
-    border-radius: 15px;
-    padding: 18px;
-    font-family: monospace;
-    color: #00ffc3;
-    line-height: 2;
-}
+        animation: starsMove 25s linear infinite;
 
-/* Recommendations */
+        z-index: 0;
+    }
 
-.tip {
-    padding: 16px;
-    background: #080e11;
-    border-left: 3px solid #00ffc3;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
 
-/* Button */
+    @keyframes starsMove {
 
-.stButton > button {
-    width: 100%;
-    height: 55px;
-    border-radius: 14px;
-    background: linear-gradient(90deg,#00ffc3,#00bfff);
-    color: #00100c;
-    border: none;
-    font-weight: 900;
-    letter-spacing: 2px;
-    transition: .3s;
-}
+        from {
+            transform: translateY(0);
+        }
 
-.stButton > button:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 30px rgba(0,255,195,.5);
-}
+        to {
+            transform: translateY(120px);
+        }
 
-/* Inputs */
+    }
 
-div[data-baseweb="input"] > div {
-    background: #080d11 !important;
-    border-radius: 12px !important;
-}
 
-div[data-baseweb="select"] > div {
-    background: #080d11 !important;
-    border-radius: 12px !important;
-}
+    /* =========================================
+       TOP BRAND
+       ========================================= */
 
-/* Footer */
+    .brand {
 
-.footer {
-    text-align: center;
-    color: #39454d;
-    letter-spacing: 4px;
-    font-size: 9px;
-    padding: 35px;
-}
+        text-align: center;
 
-</style>
-""", unsafe_allow_html=True)
+        margin-top: 15px;
+
+        font-size: 12px;
+
+        letter-spacing: 8px;
+
+        color: #00ffc3;
+
+        font-weight: 700;
+
+        text-shadow:
+            0 0 15px #00ffc3;
+    }
+
+
+    .title {
+
+        text-align: center;
+
+        font-size: 58px;
+
+        font-weight: 900;
+
+        letter-spacing: 7px;
+
+        margin-top: 12px;
+
+        color: #ffffff;
+
+        text-shadow:
+            0 0 25px rgba(0,255,195,.25);
+    }
+
+
+    .title span {
+
+        color: #00ffc3;
+
+        text-shadow:
+            0 0 30px #00ffc3;
+    }
+
+
+    .subtitle {
+
+        text-align: center;
+
+        color: #555f66;
+
+        letter-spacing: 4px;
+
+        font-size: 11px;
+
+        margin-bottom: 35px;
+    }
+
+
+    /* =========================================
+       GLASS PANELS
+       ========================================= */
+
+    .panel {
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(12,14,16,.92),
+                rgba(3,4,5,.96)
+            );
+
+        border:
+
+            1px solid
+            rgba(255,255,255,.08);
+
+        border-radius: 24px;
+
+        padding: 25px;
+
+        box-shadow:
+            0 20px 50px rgba(0,0,0,.6);
+
+        transition: .3s;
+
+    }
+
+
+    .panel:hover {
+
+        border-color:
+            rgba(0,255,195,.35);
+
+        box-shadow:
+            0 0 35px
+            rgba(0,255,195,.07);
+
+        transform:
+            translateY(-3px);
+    }
+
+
+    /* =========================================
+       SECTION
+       ========================================= */
+
+    .section {
+
+        color: #00ffc3;
+
+        font-size: 12px;
+
+        letter-spacing: 4px;
+
+        font-weight: 800;
+
+        margin-top: 28px;
+
+        margin-bottom: 15px;
+    }
+
+
+    /* =========================================
+       AI PLANET
+       ========================================= */
+
+    .planet {
+
+        width: 220px;
+
+        height: 220px;
+
+        margin: 10px auto 25px auto;
+
+        border-radius: 50%;
+
+        position: relative;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        background:
+
+            radial-gradient(
+                circle at 35% 30%,
+                #23ffe0,
+                #064c40 15%,
+                #011713 35%,
+                #000000 70%
+            );
+
+        border:
+            2px solid
+            rgba(0,255,195,.8);
+
+        box-shadow:
+
+            0 0 30px
+            rgba(0,255,195,.6),
+
+            0 0 100px
+            rgba(0,255,195,.18),
+
+            inset 0 0 40px
+            rgba(0,255,195,.4);
+
+        animation:
+            planetPulse 4s ease-in-out infinite;
+    }
+
+
+    .planet:before {
+
+        content: "";
+
+        position: absolute;
+
+        width: 290px;
+
+        height: 90px;
+
+        border-radius: 50%;
+
+        border:
+            1px solid
+            rgba(0,255,195,.7);
+
+        transform:
+            rotate(-18deg);
+
+        box-shadow:
+            0 0 20px
+            rgba(0,255,195,.15);
+
+        animation:
+            orbit 6s linear infinite;
+    }
+
+
+    .planet:after {
+
+        content: "";
+
+        position: absolute;
+
+        width: 340px;
+
+        height: 110px;
+
+        border-radius: 50%;
+
+        border:
+            1px dashed
+            rgba(80,100,255,.35);
+
+        transform:
+            rotate(35deg);
+
+        animation:
+            reverseOrbit 10s linear infinite;
+    }
+
+
+    @keyframes planetPulse {
+
+        0%,100% {
+
+            transform:
+                scale(.94);
+
+        }
+
+        50% {
+
+            transform:
+                scale(1.05);
+
+        }
+
+    }
+
+
+    @keyframes orbit {
+
+        from {
+
+            transform:
+                rotate(-18deg)
+                rotate(0deg);
+
+        }
+
+        to {
+
+            transform:
+                rotate(-18deg)
+                rotate(360deg);
+
+        }
+
+    }
+
+
+    @keyframes reverseOrbit {
+
+        from {
+
+            transform:
+                rotate(35deg)
+                rotate(360deg);
+
+        }
+
+        to {
+
+            transform:
+                rotate(35deg)
+                rotate(0deg);
+
+        }
+
+    }
+
+
+    .planet-text {
+
+        text-align: center;
+
+        font-size: 14px;
+
+        font-weight: 900;
+
+        letter-spacing: 4px;
+
+        color: white;
+
+        text-shadow:
+            0 0 15px #00ffc3;
+    }
+
+
+    /* =========================================
+       SCORE
+       ========================================= */
+
+    .score {
+
+        text-align: center;
+
+        font-size: 60px;
+
+        font-weight: 900;
+
+        color: #00ffc3;
+
+        text-shadow:
+            0 0 30px #00ffc3;
+
+        animation:
+            scoreGlow 2s infinite;
+    }
+
+
+    @keyframes scoreGlow {
+
+        0%,100% {
+
+            text-shadow:
+                0 0 15px #00ffc3;
+
+        }
+
+        50% {
+
+            text-shadow:
+                0 0 40px #00ffc3;
+
+        }
+
+    }
+
+
+    .score-label {
+
+        text-align: center;
+
+        color: #58636a;
+
+        letter-spacing: 4px;
+
+        font-size: 9px;
+    }
+
+
+    /* =========================================
+       METRICS
+       ========================================= */
+
+    .metric {
+
+        background:
+            rgba(8,10,12,.9);
+
+        border:
+            1px solid
+            rgba(255,255,255,.07);
+
+        border-radius: 18px;
+
+        padding: 20px;
+
+        text-align: center;
+
+        transition: .3s;
+    }
+
+
+    .metric:hover {
+
+        border-color:
+            #00ffc3;
+
+        box-shadow:
+            0 0 25px
+            rgba(0,255,195,.12);
+
+    }
+
+
+    .metric-title {
+
+        color: #59636b;
+
+        font-size: 9px;
+
+        letter-spacing: 3px;
+    }
+
+
+    .metric-value {
+
+        font-size: 25px;
+
+        font-weight: 900;
+
+        margin-top: 8px;
+
+        color: #ffffff;
+    }
+
+
+    /* =========================================
+       SCANNER
+       ========================================= */
+
+    .scanner {
+
+        height: 6px;
+
+        width: 100%;
+
+        background: #081012;
+
+        border-radius: 10px;
+
+        overflow: hidden;
+
+        margin-top: 15px;
+    }
+
+
+    .scanner-line {
+
+        height: 100%;
+
+        width: 30%;
+
+        background:
+            linear-gradient(
+                90deg,
+                transparent,
+                #00ffc3,
+                transparent
+            );
+
+        box-shadow:
+            0 0 15px #00ffc3;
+
+        animation:
+            scan 2s linear infinite;
+    }
+
+
+    @keyframes scan {
+
+        from {
+
+            transform:
+                translateX(-150%);
+
+        }
+
+        to {
+
+            transform:
+                translateX(450%);
+
+        }
+
+    }
+
+
+    /* =========================================
+       RECOMMENDATIONS
+       ========================================= */
+
+    .advice {
+
+        padding: 16px;
+
+        border-radius: 12px;
+
+        margin-bottom: 10px;
+
+        background:
+            rgba(8,12,14,.9);
+
+        border-left:
+            3px solid
+            #00ffc3;
+
+        transition: .25s;
+    }
+
+
+    .advice:hover {
+
+        transform:
+            translateX(7px);
+
+        background:
+            rgba(0,255,195,.04);
+    }
+
+
+    /* =========================================
+       BUTTON
+       ========================================= */
+
+    .stButton > button {
+
+        width: 100%;
+
+        height: 58px;
+
+        border-radius: 16px;
+
+        background:
+            linear-gradient(
+                90deg,
+                #00ffc3,
+                #00aaff
+            );
+
+        border: none;
+
+        color: #00100c;
+
+        font-size: 13px;
+
+        font-weight: 900;
+
+        letter-spacing: 3px;
+
+        transition: .3s;
+
+    }
+
+
+    .stButton > button:hover {
+
+        transform:
+            translateY(-3px)
+            scale(1.01);
+
+        box-shadow:
+            0 0 35px
+            rgba(0,255,195,.5);
+
+    }
+
+
+    /* =========================================
+       FOOTER
+       ========================================= */
+
+    .footer {
+
+        text-align: center;
+
+        color: #30383e;
+
+        font-size: 9px;
+
+        letter-spacing: 5px;
+
+        padding: 45px;
+
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # =========================================================
-# TITLE
+# STAR FIELD
 # =========================================================
 
 st.markdown(
-    '<div class="main-title">AURA <span>AI</span></div>',
+    '<div class="stars"></div>',
+    unsafe_allow_html=True
+)
+
+
+# =========================================================
+# HEADER
+# =========================================================
+
+st.markdown(
+    '<div class="brand">◈ ARTIFICIAL INTELLIGENCE LAB ◈</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
-    '<div class="subtitle">STUDENT PERFORMANCE INTELLIGENCE PLATFORM</div>',
+    '<div class="title">VOID <span>AI</span></div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="subtitle">STUDENT PERFORMANCE PREDICTION SYSTEM</div>',
     unsafe_allow_html=True
 )
 
 
 # =========================================================
-# TOP STATUS
+# LIVE STATUS
 # =========================================================
 
-a, b, c, d = st.columns(4)
+status1, status2, status3, status4 = st.columns(4)
 
-with a:
-    st.metric("AI ENGINE", "ONLINE")
+with status1:
+    st.metric("AI CORE", "ONLINE")
 
-with b:
-    st.metric("MODEL", "RANDOM FOREST")
+with status2:
+    st.metric("MODEL", "RF-01")
 
-with c:
-    st.metric("ANALYSIS", "REAL-TIME")
+with status3:
+    st.metric("ENGINE", "ACTIVE")
 
-with d:
-    st.metric("STATUS", "READY")
+with status4:
+    st.metric("MODE", "PREDICT")
 
 
 # =========================================================
-# STUDENT INPUT
+# INPUT
 # =========================================================
 
 st.markdown(
-    '<div class="section">◈ STUDENT DATA MATRIX</div>',
+    '<div class="section">◈ ENTER STUDENT DATA</div>',
     unsafe_allow_html=True
 )
+
 
 left, right = st.columns(2)
 
+
 with left:
 
-    name = st.text_input(
-        "Student Name",
-        placeholder="Enter student name"
+    student_name = st.text_input(
+        "Student ID / Name",
+        placeholder="e.g. ARMAAN"
     )
 
     attendance = st.slider(
-        "Attendance",
+        "Attendance %",
         0,
         100,
         80
@@ -329,25 +772,26 @@ with left:
         70
     )
 
+
 with right:
 
-    assignment = st.slider(
-        "Assignment Performance",
+    assignments = st.slider(
+        "Assignment Marks",
         0,
         100,
         75
     )
 
-    study = st.number_input(
-        "Study Hours / Day",
-        0.0,
-        15.0,
-        3.0,
-        .5
+    study_hours = st.number_input(
+        "Daily Study Hours",
+        min_value=0.0,
+        max_value=15.0,
+        value=3.0,
+        step=.5
     )
 
     previous = st.slider(
-        "Previous Semester Score",
+        "Previous Score",
         0,
         100,
         70
@@ -356,94 +800,146 @@ with right:
 
 st.write("")
 
+
+# =========================================================
+# START
+# =========================================================
+
 start = st.button(
-    "◉ ACTIVATE AURA INTELLIGENCE"
+    "✦ LAUNCH PREDICTION ENGINE"
 )
 
 
-# =========================================================
-# AI PROCESSING
-# =========================================================
-
 if start:
 
-    student = name if name else "Student"
+    student = (
+        student_name.strip()
+        if student_name.strip()
+        else "STUDENT-001"
+    )
 
-    box = st.empty()
 
-    steps = [
-        "BOOTING AURA NEURAL ENGINE",
-        "READING STUDENT PROFILE",
-        "ANALYZING ATTENDANCE SIGNAL",
-        "ANALYZING PERFORMANCE SIGNALS",
-        "EXECUTING RANDOM FOREST",
-        "CALCULATING RISK VECTOR",
-        "GENERATING PERSONALIZED PLAN"
+    # =====================================================
+    # SCANNING ANIMATION
+    # =====================================================
+
+    animation = st.empty()
+
+
+    messages = [
+
+        "CONNECTING TO VOID AI",
+
+        "LOCKING STUDENT PROFILE",
+
+        "SCANNING ACADEMIC DATA",
+
+        "EXTRACTING PERFORMANCE FEATURES",
+
+        "RUNNING RANDOM FOREST",
+
+        "CALCULATING RISK PROBABILITY",
+
+        "BUILDING FUTURE SCENARIO",
+
+        "AI ANALYSIS COMPLETE"
+
     ]
 
-    for step in steps:
 
-        box.markdown(
+    for message in messages:
+
+        animation.markdown(
             f"""
-            <div class="log">
-            [ AURA ] &gt;&gt; {step}...
+            <div class="panel">
+
+                <div style="
+                    color:#00ffc3;
+                    font-family:monospace;
+                    letter-spacing:2px;
+                ">
+
+                ◉ SYSTEM &gt; {message}
+
+                </div>
+
+                <div class="scanner">
+
+                    <div class="scanner-line"></div>
+
+                </div>
+
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        time.sleep(.3)
+        time.sleep(.35)
 
-    box.empty()
+
+    animation.empty()
 
 
     # =====================================================
-    # MODEL
+    # PREDICTION
     # =====================================================
 
     score = predict_score(
         attendance,
         internal,
-        assignment,
-        study,
+        assignments,
+        study_hours,
         previous
     )
 
+
     risk = get_risk(score)
+
 
     recommendations = get_recommendations(
         attendance,
         internal,
-        assignment,
-        study,
+        assignments,
+        study_hours,
         previous
     )
 
 
     # =====================================================
-    # RESULT
+    # AI CORE
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ NEURAL CORE RESULT</div>',
+        '<div class="section">◈ NEURAL PLANET</div>',
         unsafe_allow_html=True
     )
 
-    core_left, core, core_right = st.columns([1,2,1])
 
-    with core:
+    a, b, c = st.columns([1,2,1])
+
+
+    with b:
 
         st.markdown(
             """
-            <div class="card">
+            <div class="panel">
 
-                <div class="orb">
+                <div class="planet">
 
-                    <div class="orb-text">
-                        AURA<br>
-                        <span style="color:#718096;font-size:9px;">
-                        ANALYZING
+                    <div class="planet-text">
+
+                        VOID AI
+
+                        <br>
+
+                        <span style="
+                            color:#69757d;
+                            font-size:9px;
+                            letter-spacing:2px;
+                        ">
+                            NEURAL CORE
                         </span>
+
                     </div>
 
                 </div>
@@ -453,58 +949,75 @@ if start:
             unsafe_allow_html=True
         )
 
+
         st.markdown(
-            f'<div class="big-score">{score}%</div>',
+            f'<div class="score">{score}%</div>',
             unsafe_allow_html=True
         )
 
-        st.caption(
-            "PREDICTED FINAL PERFORMANCE"
+
+        st.markdown(
+            '<div class="score-label">PREDICTED PERFORMANCE</div>',
+            unsafe_allow_html=True
         )
 
 
     # =====================================================
-    # RESULT CARDS
+    # RESULT
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ PERFORMANCE VECTOR</div>',
+        '<div class="section">◈ AI DECISION</div>',
         unsafe_allow_html=True
     )
 
-    r1, r2, r3 = st.columns(3)
 
     if risk == "LOW":
-        risk_display = "🟢 LOW"
+
+        risk_text = "🟢 LOW"
+
     elif risk == "MEDIUM":
-        risk_display = "🟡 MEDIUM"
+
+        risk_text = "🟡 MEDIUM"
+
     else:
-        risk_display = "🔴 HIGH"
+
+        risk_text = "🔴 HIGH"
 
 
     if score >= 85:
-        level = "🏆 EXCELLENT"
+
+        performance = "🏆 EXCELLENT"
+
     elif score >= 75:
-        level = "⭐ GOOD"
+
+        performance = "⭐ GOOD"
+
     elif score >= 60:
-        level = "📘 AVERAGE"
+
+        performance = "📘 AVERAGE"
+
     else:
-        level = "⚠️ CRITICAL"
+
+        performance = "⚠️ CRITICAL"
 
 
-    with r1:
+    c1, c2, c3 = st.columns(3)
+
+
+    with c1:
 
         st.markdown(
             f"""
             <div class="metric">
 
-            <div class="metric-title">
-            PREDICTED SCORE
-            </div>
+                <div class="metric-title">
+                    PREDICTED SCORE
+                </div>
 
-            <div class="metric-value">
-            {score}%
-            </div>
+                <div class="metric-value">
+                    {score}%
+                </div>
 
             </div>
             """,
@@ -512,19 +1025,19 @@ if start:
         )
 
 
-    with r2:
+    with c2:
 
         st.markdown(
             f"""
             <div class="metric">
 
-            <div class="metric-title">
-            RISK VECTOR
-            </div>
+                <div class="metric-title">
+                    RISK LEVEL
+                </div>
 
-            <div class="metric-value">
-            {risk_display}
-            </div>
+                <div class="metric-value">
+                    {risk_text}
+                </div>
 
             </div>
             """,
@@ -532,19 +1045,19 @@ if start:
         )
 
 
-    with r3:
+    with c3:
 
         st.markdown(
             f"""
             <div class="metric">
 
-            <div class="metric-title">
-            PERFORMANCE LEVEL
-            </div>
+                <div class="metric-title">
+                    PERFORMANCE
+                </div>
 
-            <div class="metric-value">
-            {level}
-            </div>
+                <div class="metric-value">
+                    {performance}
+                </div>
 
             </div>
             """,
@@ -553,90 +1066,137 @@ if start:
 
 
     # =====================================================
-    # DATA VISUALIZATION
+    # GRAPH
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ PERFORMANCE RADAR</div>',
+        '<div class="section">◈ ACADEMIC ENERGY MAP</div>',
         unsafe_allow_html=True
     )
 
-    data = pd.DataFrame({
+
+    graph = pd.DataFrame({
+
         "Performance": [
+
             attendance,
+
             internal,
-            assignment,
+
+            assignments,
+
             previous,
+
             score
+
         ]
+
     }, index=[
+
         "Attendance",
+
         "Internal",
+
         "Assignments",
+
         "Previous",
-        "Prediction"
+
+        "AI Prediction"
+
     ])
 
-    st.bar_chart(data)
+
+    st.bar_chart(graph)
 
 
     # =====================================================
-    # RISK DETECTION
+    # RISK ENGINE
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ EARLY WARNING SYSTEM</div>',
+        '<div class="section">◈ THREAT DETECTION</div>',
         unsafe_allow_html=True
     )
 
-    problems = []
+
+    warnings = []
+
 
     if attendance < 75:
-        problems.append("Attendance below safe threshold")
+
+        warnings.append(
+            "Attendance anomaly detected"
+        )
+
 
     if internal < 60:
-        problems.append("Internal marks need improvement")
 
-    if assignment < 60:
-        problems.append("Assignment performance is weak")
+        warnings.append(
+            "Low internal assessment signal"
+        )
 
-    if study < 2:
-        problems.append("Study time is insufficient")
+
+    if assignments < 60:
+
+        warnings.append(
+            "Assignment performance anomaly"
+        )
+
+
+    if study_hours < 2:
+
+        warnings.append(
+            "Insufficient study-time signal"
+        )
+
 
     if previous < 60:
-        problems.append("Previous score indicates risk")
+
+        warnings.append(
+            "Historical performance risk"
+        )
 
 
-    if problems:
+    if warnings:
 
-        for problem in problems:
+        for warning in warnings:
 
             st.warning(
-                "⚠ " + problem
+                "⚠ " + warning
             )
 
     else:
 
         st.success(
-            "✓ NO CRITICAL ACADEMIC SIGNALS DETECTED"
+            "✓ NO HIGH-RISK SIGNALS DETECTED"
         )
 
 
     # =====================================================
-    # AI ADVICE
+    # AI ADVISOR
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ AURA AI ADVISOR</div>',
+        '<div class="section">◈ AI MISSION PLAN</div>',
         unsafe_allow_html=True
     )
+
 
     for recommendation in recommendations:
 
         st.markdown(
             f"""
-            <div class="tip">
-            🤖 <b>AI:</b> {recommendation}
+            <div class="advice">
+
+                <span style="
+                    color:#00ffc3;
+                    font-weight:900;
+                ">
+                AI →
+                </span>
+
+                {recommendation}
+
             </div>
             """,
             unsafe_allow_html=True
@@ -644,56 +1204,62 @@ if start:
 
 
     # =====================================================
-    # WHAT IF
+    # FUTURE
     # =====================================================
 
     st.markdown(
-        '<div class="section">◈ FUTURE SCENARIO SIMULATOR</div>',
+        '<div class="section">◈ FUTURE SIMULATION</div>',
         unsafe_allow_html=True
     )
 
-    st.write(
-        "What happens if the student improves attendance?"
-    )
 
-    future_attendance = st.slider(
-        "Future Attendance",
+    future = st.slider(
+        "Simulate Improved Attendance",
         int(attendance),
         100,
-        min(90, int(attendance + 10))
+        min(95, int(attendance + 10))
     )
 
+
     future_score = predict_score(
-        future_attendance,
+        future,
         internal,
-        assignment,
-        study,
+        assignments,
+        study_hours,
         previous
     )
 
-    improvement = round(
+
+    gain = round(
         future_score - score,
         1
     )
 
-    q1, q2, q3 = st.columns(3)
 
-    with q1:
+    f1, f2, f3 = st.columns(3)
+
+
+    with f1:
+
         st.metric(
             "CURRENT",
             f"{score}%"
         )
 
-    with q2:
+
+    with f2:
+
         st.metric(
             "FUTURE",
             f"{future_score}%"
         )
 
-    with q3:
+
+    with f3:
+
         st.metric(
-            "GAIN",
-            f"{improvement:+.1f}%"
+            "POTENTIAL GAIN",
+            f"{gain:+.1f}%"
         )
 
 
@@ -704,11 +1270,17 @@ if start:
 st.markdown(
     """
     <div class="footer">
-        AURA AI
+
+        VOID AI
+
         <br><br>
-        PREDICT • UNDERSTAND • IMPROVE
+
+        PREDICT • DETECT • SIMULATE • IMPROVE
+
         <br><br>
-        AI STUDENT PERFORMANCE INTELLIGENCE
+
+        STUDENT PERFORMANCE INTELLIGENCE
+
     </div>
     """,
     unsafe_allow_html=True
